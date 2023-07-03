@@ -14,7 +14,7 @@ subprojects {
         java.withJavadocJar()
 
         jar {
-            from(rootProject.file("LICENSE")) {
+            from(project.parent.file("LICENSE")) {
                 rename { "${it}_${mod_name}" }
             }
             manifest {
@@ -34,7 +34,7 @@ subprojects {
         }
 
         sourcesJar {
-            from(rootProject.file("LICENSE")) {
+            from(project.parent.file("LICENSE")) {
                 rename { "${it}_${mod_name}" }
             }
         }
@@ -79,7 +79,7 @@ subprojects {
 			apply plugin: 'org.spongepowered.gradle.vanilla'
 
 			base {
-				archivesName = "${mod_name}-common-${minecraft_version}"
+				archivesName = "${mod_name}-common-${minecraft_version}-${mod_version}"
 			}
 			minecraft {
 				version(minecraft_version)
@@ -112,7 +112,7 @@ subprojects {
 			apply plugin: 'maven-publish'
 			apply plugin: 'fabric-loom'
 			base {
-				archivesName = "${mod_name}-fabric-${minecraft_version}"
+				archivesName = "${mod_name}-fabric-${minecraft_version}-${mod_version}"
 			}
 			dependencies {
 				minecraft "com.mojang:minecraft:${minecraft_version}"
@@ -179,7 +179,7 @@ subprojects {
 			apply plugin: 'net.minecraftforge.gradle'
 			apply plugin: 'org.spongepowered.mixin'
 			base {
-				archivesName = "${mod_name}-forge-${minecraft_version}"
+				archivesName = "${mod_name}-forge-${minecraft_version}-${mod_version}"
 			}
 			mixin {
 				add(sourceSets.main, "${mod_id}.refmap.json")

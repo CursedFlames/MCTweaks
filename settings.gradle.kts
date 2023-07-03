@@ -21,9 +21,9 @@ plugins {
 }
 
 // This should match the folder name of the project, or else IDEA may complain (see https://youtrack.jetbrains.com/issue/IDEA-317606)
-rootProject.name = "MultiLoader-Monorepo-Project"
+rootProject.name = "MCTweaks"
 
-val mods = arrayOf("examplemod")
+val mods = arrayOf("StackablePotions", "FastToolSwitching")
 mods.forEach { mod ->
     include("$mod:common", "$mod:fabric", "$mod:forge")
 }
