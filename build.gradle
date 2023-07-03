@@ -11,7 +11,7 @@ subprojects {
 
         java.toolchain.languageVersion = JavaLanguageVersion.of(17)
         java.withSourcesJar()
-        java.withJavadocJar()
+//        java.withJavadocJar()
 
         jar {
             from(project.parent.file("LICENSE")) {
@@ -149,9 +149,9 @@ subprojects {
 			tasks.withType(JavaCompile).configureEach {
 				source(project.parent.childProjects.get("common").sourceSets.main.allSource)
 			}
-			tasks.withType(Javadoc).configureEach {
-				source(project.parent.childProjects.get("common").sourceSets.main.allJava)
-			}
+//			tasks.withType(Javadoc).configureEach {
+//				source(project.parent.childProjects.get("common").sourceSets.main.allJava)
+//			}
 			tasks.named("sourcesJar", Jar) {
 				from(project.parent.childProjects.get("common").sourceSets.main.allSource)
 			}
@@ -185,7 +185,9 @@ subprojects {
 				add(sourceSets.main, "${mod_id}.refmap.json")
 
 				config("${mod_id}.mixins.json")
-				config("${mod_id}.forge.mixins.json")
+				if (file("src/main/resources/${mod_id}.forge.mixins.json").exists()) {
+					config("${mod_id}.forge.mixins.json")
+				}
 			}
 
 			minecraft {
@@ -255,9 +257,9 @@ subprojects {
 			tasks.withType(JavaCompile).configureEach {
 				source(project.parent.childProjects.get("common").sourceSets.main.allSource)
 			}
-			tasks.withType(Javadoc).configureEach {
-				source(project.parent.childProjects.get("common").sourceSets.main.allJava)
-			}
+//			tasks.withType(Javadoc).configureEach {
+//				source(project.parent.childProjects.get("common").sourceSets.main.allJava)
+//			}
 			tasks.named("sourcesJar", Jar) {
 				from(project.parent.childProjects.get("common").sourceSets.main.allSource)
 			}
