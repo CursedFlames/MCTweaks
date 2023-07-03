@@ -1,0 +1,294 @@
+plugins {
+    id("fabric-loom") version "1.2-SNAPSHOT" apply(false)
+    id("net.minecraftforge.gradle") version "[6.0,6.2)" apply(false)
+    id("org.spongepowered.gradle.vanilla") version "0.2.1-SNAPSHOT" apply(false)
+    id("org.spongepowered.mixin") version "0.7-SNAPSHOT" apply(false)
+}
+
+subprojects {
+    if (project.parent?.parent == rootProject) {
+        apply plugin: 'java'
+
+        java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+        java.withSourcesJar()
+        java.withJavadocJar()
+
+        jar {
+            from(rootProject.file("LICENSE")) {
+                rename { "${it}_${mod_name}" }
+            }
+            manifest {
+                attributes([
+				'Specification-Title'     : mod_name,
+				'Specification-Vendor'    : mod_author,
+				'Specification-Version'   : project.jar.archiveVersion,
+                'Implementation-Title'    : project.name,
+                'Implementation-Version'  : project.jar.archiveVersion,
+                'Implementation-Vendor'   : mod_author,
+                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                'Timestamp'               : System.currentTimeMillis(),
+                'Built-On-Java'           : "${System.getProperty('java.vm.version')} (${System.getProperty('java.vm.vendor')})",
+                'Built-On-Minecraft'      : minecraft_version
+                ])
+            }
+        }
+
+        sourcesJar {
+            from(rootProject.file("LICENSE")) {
+                rename { "${it}_${mod_name}" }
+            }
+        }
+
+        repositories {
+            mavenCentral()
+            maven {
+                name = 'Sponge / Mixin'
+                url = 'https://repo.spongepowered.org/repository/maven-public/'
+            }
+            maven {
+                name = 'BlameJared Maven (JEI / CraftTweaker / Bookshelf)'
+                url = 'https://maven.blamejared.com'
+            }
+        }
+
+        tasks.withType(JavaCompile).configureEach {
+
+            it.options.encoding = 'UTF-8'
+            it.options.getRelease().set(17)
+        }
+
+        processResources {
+            filesMatching(['pack.mcmeta', 'fabric.mod.json', '*.mixins.json']) {
+                expand project.properties
+            }
+        }
+
+        // Disables Gradle's custom module metadata from being published to maven. The
+        // metadata includes mapped dependencies which are not reasonably consumable by
+        // other mod developers.
+        tasks.withType(GenerateModuleMetadata).configureEach {
+
+            enabled = false
+        }
+		// `switch` didn't seem to work, so we use chained `if` instead
+		// TODO this is pretty messy, can we separate them into separate files in the root directory or something?
+		if (project.name == "common") {
+			apply plugin: 'idea'
+			apply plugin: 'java'
+			apply plugin: 'maven-publish'
+			apply plugin: 'org.spongepowered.gradle.vanilla'
+
+			base {
+				archivesName = "${mod_name}-common-${minecraft_version}"
+			}
+			minecraft {
+				version(minecraft_version)
+				if(file("src/main/resources/${mod_id}.accesswidener").exists()){
+					accessWideners(file("src/main/resources/${mod_id}.accesswidener"))
+				}
+			}
+
+			dependencies {
+				compileOnly group:'org.spongepowered', name:'mixin', version:'0.8.5'
+				implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
+			}
+
+			publishing {
+				publications {
+					mavenJava(MavenPublication) {
+						artifactId base.archivesName.get()
+						from components.java
+					}
+				}
+				repositories {
+					maven {
+						url "file://" + System.getenv("local_maven")
+					}
+				}
+			}
+		} else if (project.name == "fabric") {
+			apply plugin: 'java'
+			apply plugin: 'idea'
+			apply plugin: 'maven-publish'
+			apply plugin: 'fabric-loom'
+			base {
+				archivesName = "${mod_name}-fabric-${minecraft_version}"
+			}
+			dependencies {
+				minecraft "com.mojang:minecraft:${minecraft_version}"
+				mappings loom.officialMojangMappings()
+				modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+				modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+				implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
+				implementation project.parent.childProjects.get("common")
+			}
+
+			loom {
+				if (project.parent.childProjects.get("common").file("src/main/resources/${mod_id}.accesswidener").exists()) {
+					accessWidenerPath.set(project.parent.childProjects.get("common").file("src/main/resources/${mod_id}.accesswidener"))
+				}
+				mixin {
+					defaultRefmapName.set("${mod_id}.refmap.json")
+				}
+				runs {
+					client {
+						client()
+						setConfigName("Fabric Client")
+						ideConfigGenerated(true)
+						runDir("run")
+					}
+					server {
+						server()
+						setConfigName("Fabric Server")
+						ideConfigGenerated(true)
+						runDir("run")
+					}
+				}
+			}
+
+			tasks.withType(JavaCompile).configureEach {
+				source(project.parent.childProjects.get("common").sourceSets.main.allSource)
+			}
+			tasks.withType(Javadoc).configureEach {
+				source(project.parent.childProjects.get("common").sourceSets.main.allJava)
+			}
+			tasks.named("sourcesJar", Jar) {
+				from(project.parent.childProjects.get("common").sourceSets.main.allSource)
+			}
+
+			processResources {
+				from project.parent.childProjects.get("common").sourceSets.main.resources
+			}
+
+			publishing {
+				publications {
+					mavenJava(MavenPublication) {
+						artifactId base.archivesName.get()
+						from components.java
+					}
+				}
+				repositories {
+					maven {
+						url "file://" + System.getenv("local_maven")
+					}
+				}
+			}
+		} else if (project.name == "forge") {
+			apply plugin: 'idea'
+			apply plugin: 'maven-publish'
+			apply plugin: 'net.minecraftforge.gradle'
+			apply plugin: 'org.spongepowered.mixin'
+			base {
+				archivesName = "${mod_name}-forge-${minecraft_version}"
+			}
+			mixin {
+				add(sourceSets.main, "${mod_id}.refmap.json")
+
+				config("${mod_id}.mixins.json")
+				config("${mod_id}.forge.mixins.json")
+			}
+
+			minecraft {
+				mappings channel: 'official', version: minecraft_version
+
+				// Automatically enable forge AccessTransformers if the file exists
+				// This location is hardcoded in Forge and can not be changed.
+				// https://github.com/MinecraftForge/MinecraftForge/blob/be1698bb1554f9c8fa2f58e32b9ab70bc4385e60/fmlloader/src/main/java/net/minecraftforge/fml/loading/moddiscovery/ModFile.java#L123
+				if (file('src/main/resources/META-INF/accesstransformer.cfg').exists()) {
+					accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+				}
+
+				runs {
+					client {
+						workingDirectory project.file('run')
+						ideaModule "${rootProject.name}.${project.name}.main"
+						taskName 'Client'
+						property 'mixin.env.remapRefMap', 'true'
+						property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+						mods {
+							modClientRun {
+								source sourceSets.main
+								source project.parent.childProjects.get("common").sourceSets.main
+							}
+						}
+					}
+
+					server {
+						workingDirectory project.file('run')
+						ideaModule "${rootProject.name}.${project.name}.main"
+						taskName 'Server'
+						property 'mixin.env.remapRefMap', 'true'
+						property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+						mods {
+							modServerRun {
+								source sourceSets.main
+								source project.parent.childProjects.get("common").sourceSets.main
+							}
+						}
+					}
+
+					data {
+						workingDirectory project.file('run')
+						ideaModule "${rootProject.name}.${project.name}.main"
+						args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+						taskName 'Data'
+						property 'mixin.env.remapRefMap', 'true'
+						property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+						mods {
+							modDataRun {
+								source sourceSets.main
+								source project.parent.childProjects.get("common").sourceSets.main
+							}
+						}
+					}
+				}
+			}
+
+			sourceSets.main.resources.srcDir 'src/generated/resources'
+
+			dependencies {
+				minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+				compileOnly project.parent.childProjects.get("common")
+				annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT:processor")
+			}
+
+			tasks.withType(JavaCompile).configureEach {
+				source(project.parent.childProjects.get("common").sourceSets.main.allSource)
+			}
+			tasks.withType(Javadoc).configureEach {
+				source(project.parent.childProjects.get("common").sourceSets.main.allJava)
+			}
+			tasks.named("sourcesJar", Jar) {
+				from(project.parent.childProjects.get("common").sourceSets.main.allSource)
+			}
+
+			processResources {
+				from project.parent.childProjects.get("common").sourceSets.main.resources
+				// Doing this here instead of earlier on fixes `mods.toml` not getting processed properly, for some reason
+				// TODO is this still necessary?
+				filesMatching(['META-INF/mods.toml']) {
+					expand project.properties
+				}
+			}
+
+			jar.finalizedBy('reobfJar')
+
+			publishing {
+				publications {
+					mavenJava(MavenPublication) {
+						artifactId base.archivesName.get()
+						from components.java
+						fg.component(it)
+					}
+				}
+				repositories {
+					maven {
+						url "file://" + System.getenv("local_maven")
+					}
+				}
+			}
+		} else {
+			logger.warn("Unknown subproject ${project.name} in project ${project.parent.name}")
+		}
+    }
+}
