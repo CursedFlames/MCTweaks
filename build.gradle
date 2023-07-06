@@ -11,25 +11,10 @@ subprojects {
 
         java.toolchain.languageVersion = JavaLanguageVersion.of(17)
         java.withSourcesJar()
-//        java.withJavadocJar()
 
         jar {
             from(project.parent.file("LICENSE")) {
                 rename { "${it}_${mod_name}" }
-            }
-            manifest {
-                attributes([
-				'Specification-Title'     : mod_name,
-				'Specification-Vendor'    : mod_author,
-				'Specification-Version'   : project.jar.archiveVersion,
-                'Implementation-Title'    : project.name,
-                'Implementation-Version'  : project.jar.archiveVersion,
-                'Implementation-Vendor'   : mod_author,
-                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                'Timestamp'               : System.currentTimeMillis(),
-                'Built-On-Java'           : "${System.getProperty('java.vm.version')} (${System.getProperty('java.vm.vendor')})",
-                'Built-On-Minecraft'      : minecraft_version
-                ])
             }
         }
 
@@ -92,20 +77,6 @@ subprojects {
 				compileOnly group:'org.spongepowered', name:'mixin', version:'0.8.5'
 				implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
 			}
-
-			publishing {
-				publications {
-					mavenJava(MavenPublication) {
-						artifactId base.archivesName.get()
-						from components.java
-					}
-				}
-				repositories {
-					maven {
-						url "file://" + System.getenv("local_maven")
-					}
-				}
-			}
 		} else if (project.name == "fabric") {
 			apply plugin: 'java'
 			apply plugin: 'idea'
@@ -149,29 +120,12 @@ subprojects {
 			tasks.withType(JavaCompile).configureEach {
 				source(project.parent.childProjects.get("common").sourceSets.main.allSource)
 			}
-//			tasks.withType(Javadoc).configureEach {
-//				source(project.parent.childProjects.get("common").sourceSets.main.allJava)
-//			}
 			tasks.named("sourcesJar", Jar) {
 				from(project.parent.childProjects.get("common").sourceSets.main.allSource)
 			}
 
 			processResources {
 				from project.parent.childProjects.get("common").sourceSets.main.resources
-			}
-
-			publishing {
-				publications {
-					mavenJava(MavenPublication) {
-						artifactId base.archivesName.get()
-						from components.java
-					}
-				}
-				repositories {
-					maven {
-						url "file://" + System.getenv("local_maven")
-					}
-				}
 			}
 		} else if (project.name == "forge") {
 			apply plugin: 'idea'
@@ -203,7 +157,7 @@ subprojects {
 				runs {
 					client {
 						workingDirectory project.file('run')
-						ideaModule "${rootProject.name}.${project.name}.main"
+						ideaModule "${rootProject.name}.${project.parent.name}.${project.name}.main"
 						taskName 'Client'
 						property 'mixin.env.remapRefMap', 'true'
 						property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
@@ -217,7 +171,7 @@ subprojects {
 
 					server {
 						workingDirectory project.file('run')
-						ideaModule "${rootProject.name}.${project.name}.main"
+						ideaModule "${rootProject.name}.${project.parent.name}.${project.name}.main"
 						taskName 'Server'
 						property 'mixin.env.remapRefMap', 'true'
 						property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
@@ -231,7 +185,7 @@ subprojects {
 
 					data {
 						workingDirectory project.file('run')
-						ideaModule "${rootProject.name}.${project.name}.main"
+						ideaModule "${rootProject.name}.${project.parent.name}.${project.name}.main"
 						args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 						taskName 'Data'
 						property 'mixin.env.remapRefMap', 'true'
@@ -257,9 +211,6 @@ subprojects {
 			tasks.withType(JavaCompile).configureEach {
 				source(project.parent.childProjects.get("common").sourceSets.main.allSource)
 			}
-//			tasks.withType(Javadoc).configureEach {
-//				source(project.parent.childProjects.get("common").sourceSets.main.allJava)
-//			}
 			tasks.named("sourcesJar", Jar) {
 				from(project.parent.childProjects.get("common").sourceSets.main.allSource)
 			}
@@ -274,21 +225,6 @@ subprojects {
 			}
 
 			jar.finalizedBy('reobfJar')
-
-			publishing {
-				publications {
-					mavenJava(MavenPublication) {
-						artifactId base.archivesName.get()
-						from components.java
-						fg.component(it)
-					}
-				}
-				repositories {
-					maven {
-						url "file://" + System.getenv("local_maven")
-					}
-				}
-			}
 		} else {
 			logger.warn("Unknown subproject ${project.name} in project ${project.parent.name}")
 		}
