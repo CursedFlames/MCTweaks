@@ -1,8 +1,21 @@
 plugins {
+	// TODO for reproducible builds and general toolchain safety, we should really pin to specific versions instead of using SNAPSHOT etc
+	// see https://github.com/fractureiser-investigation/fractureiser/blob/94f35c5343732b4bf97124ce1cad5744e4ee3602/docs/2023-06-08-meeting.md#discussion-and-action-items-1
     id("fabric-loom") version "1.2-SNAPSHOT" apply(false)
     id("net.minecraftforge.gradle") version "[6.0,6.2)" apply(false)
     id("org.spongepowered.gradle.vanilla") version "0.2.1-SNAPSHOT" apply(false)
     id("org.spongepowered.mixin") version "0.7-SNAPSHOT" apply(false)
+	// Publishing
+	id("com.modrinth.minotaur") version "2.+" apply(false)
+	id("net.darkhax.curseforgegradle") version "1.1.15" apply(false)
+	// Environment variables (API keys)
+	id("co.uzzu.dotenv.gradle") version "2.0.0"
+	// Reproducible builds
+	id("reproducible-builds") apply(false)
+}
+
+allprojects {
+	apply plugin: "reproducible-builds"
 }
 
 subprojects {
@@ -82,6 +95,8 @@ subprojects {
 			apply plugin: 'idea'
 			apply plugin: 'maven-publish'
 			apply plugin: 'fabric-loom'
+			apply plugin: "com.modrinth.minotaur"
+			apply plugin: "net.darkhax.curseforgegradle"
 			base {
 				archivesName = "${mod_name}-fabric-${minecraft_version}-${mod_version}"
 			}
@@ -127,11 +142,43 @@ subprojects {
 			processResources {
 				from project.parent.childProjects.get("common").sourceSets.main.resources
 			}
+
+			var curseProjectId = null;
+			if (project.hasProperty("curseforge_id_fabric")) {
+				curseProjectId = "${project.curseforge_id_fabric}".toString();
+			} else if (project.hasProperty("curseforge_id")) {
+				curseProjectId = "${project.curseforge_id}".toString();
+			}
+
+			if (curseProjectId != null) {
+				task publishCurseforge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
+					group = "publishing"
+					apiToken = env.CURSEFORGE_TOKEN.value
+//					debugMode = true
+
+					// A project ID is required to tell CurseForge which project the uploaded
+					// file belongs to. This is public on your project page and is not private
+					// information.
+					var projectId = curseProjectId
+
+					// Tells CurseForgeGradle to publish the output of the jar task. This will
+					// return a UploadArtifact object that can be used to further configure the
+					// file.
+					def mainFile = upload(projectId, remapJar)
+					mainFile.changelogType = "markdown"
+					mainFile.changelog = project.parent.file("changelog.md")
+					mainFile.releaseType = "${mod_version}".startsWith("0") ? "beta" : "release"
+					mainFile.displayName = "${display_mc_version}-${mod_version}-fabric"
+					mainFile.addRequirement("fabric-api")
+				}
+			}
 		} else if (project.name == "forge") {
 			apply plugin: 'idea'
 			apply plugin: 'maven-publish'
 			apply plugin: 'net.minecraftforge.gradle'
 			apply plugin: 'org.spongepowered.mixin'
+			apply plugin: "com.modrinth.minotaur"
+			apply plugin: "net.darkhax.curseforgegradle"
 			base {
 				archivesName = "${mod_name}-forge-${minecraft_version}-${mod_version}"
 			}
@@ -225,6 +272,35 @@ subprojects {
 			}
 
 			jar.finalizedBy('reobfJar')
+
+			var curseProjectId = null;
+			if (project.hasProperty("curseforge_id_forge")) {
+				curseProjectId = "${project.curseforge_id_forge}".toString();
+			} else if (project.hasProperty("curseforge_id")) {
+				curseProjectId = "${project.curseforge_id}".toString();
+			}
+
+			if (curseProjectId != null) {
+				task publishCurseforge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
+					group = "publishing"
+					apiToken = env.CURSEFORGE_TOKEN.value
+//					debugMode = true
+
+					// A project ID is required to tell CurseForge which project the uploaded
+					// file belongs to. This is public on your project page and is not private
+					// information.
+					var projectId = curseProjectId
+
+					// Tells CurseForgeGradle to publish the output of the jar task. This will
+					// return a UploadArtifact object that can be used to further configure the
+					// file.
+					def mainFile = upload(projectId, jar)
+					mainFile.changelogType = "markdown"
+					mainFile.changelog = project.parent.file("changelog.md")
+					mainFile.releaseType = "${mod_version}".startsWith("0") ? "beta" : "release"
+					mainFile.displayName = "${display_mc_version}-${mod_version}-forge"
+				}
+			}
 		} else {
 			logger.warn("Unknown subproject ${project.name} in project ${project.parent.name}")
 		}
