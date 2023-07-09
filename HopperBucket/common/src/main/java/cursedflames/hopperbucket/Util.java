@@ -23,6 +23,14 @@ public class Util {
 		}
 		return -1;
 	}
+	public static int getFirstStackOfSizeOneIndex(Container container, Item item) {
+		int length = container.getContainerSize();
+		for (int i = 0; i < length; i++) {
+			var stack = container.getItem(i);
+			if (stack.is(item) && stack.getCount() == 1) return i;
+		}
+		return -1;
+	}
 	public static int getFirstMatching(Container container, Predicate<ItemStack> predicate) {
 		int length = container.getContainerSize();
 		for (int i = 0; i < length; i++) {

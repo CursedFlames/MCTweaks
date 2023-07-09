@@ -18,15 +18,16 @@ import java.util.Collections;
 
 import static cursedflames.hopperbucket.Util.getFirstEmptySlot;
 import static cursedflames.hopperbucket.Util.getFirstStackIndex;
+import static cursedflames.hopperbucket.Util.getFirstStackOfSizeOneIndex;
 
 @Mixin(HopperBlockEntity.class)
 public class MixinHopperBlockEntity {
 	@Inject(method = "suckInItems", at = @At("HEAD"), cancellable = true)
 	private static void onSuckInItems(Level level, Hopper hopper, CallbackInfoReturnable<Boolean> cir) {
 		if (!hopper.hasAnyOf(Collections.singleton(Items.BUCKET))) return;
-		var bucketStackIndex = getFirstStackIndex(hopper, Items.BUCKET);
-		var bucketStack = hopper.getItem(bucketStackIndex);
 		var emptySlotIndex = getFirstEmptySlot(hopper);
+		var bucketStackIndex = emptySlotIndex == -1 ? getFirstStackOfSizeOneIndex(hopper, Items.BUCKET) : getFirstStackIndex(hopper, Items.BUCKET);
+		var bucketStack = hopper.getItem(bucketStackIndex);
 		if (bucketStack.getCount() > 1 && emptySlotIndex == -1) return;
 
 		var pos = BlockPos.containing(hopper.getLevelX(), hopper.getLevelY() + 1.0, hopper.getLevelZ());
