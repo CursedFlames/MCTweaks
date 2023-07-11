@@ -23,7 +23,7 @@ plugins {
 // This should match the folder name of the project, or else IDEA may complain (see https://youtrack.jetbrains.com/issue/IDEA-317606)
 rootProject.name = "MCTweaks"
 
-val mods = arrayOf("StackablePotions", "FastToolSwitching", "UpdatingWorldIcon", "Pale", "NoDurability", "NoIncreasingRepairCost", "HopperBucket")
+val mods = arrayOf("StackablePotions", "FastToolSwitching", "UpdatingWorldIcon", "Pale", "NoDurability", "NoIncreasingRepairCost", "HopperBucket", "SplitShulkerBoxes")
 mods.forEach { mod ->
     include("$mod:common", "$mod:fabric", "$mod:forge")
 }
