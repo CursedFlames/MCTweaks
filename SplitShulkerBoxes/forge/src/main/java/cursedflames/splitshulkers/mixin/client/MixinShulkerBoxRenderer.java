@@ -33,7 +33,7 @@ public class MixinShulkerBoxRenderer {
 		cancellable = true,
 		locals = LocalCapture.CAPTURE_FAILHARD
 	)
-	private void onRender(ShulkerBoxBlockEntity shulkerBox, float f, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int j, CallbackInfo ci, Direction direction, DyeColor _color, Material material) {
+	private void onRender(ShulkerBoxBlockEntity shulkerBox, float f, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int j, CallbackInfo ci, Direction direction, Material material) {
 //		if (false) return; // TODO check for non-split shulkers
 		ci.cancel();
 		var color2 = ((SplitShulkerBoxBlockEntity) shulkerBox).splitshulkers_getSecondaryColor();
