@@ -4,7 +4,6 @@ import cursedflames.splitshulkers.SplitShulkerBoxBlockEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
@@ -13,7 +12,7 @@ import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -42,8 +41,8 @@ public abstract class MixinShulkerBoxBlock extends BaseEntityBlock {
 		components.add(1, Component.translatable("splitshulkers.secondarycolor").append(color2 == null ? Component.translatable("gui.none") : Component.translatable("color.minecraft." + color2.getName())));
 	}
 
-	@Redirect(method = "getDrops", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/BaseEntityBlock;getDrops(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/storage/loot/LootParams$Builder;)Ljava/util/List;"))
-	private List onGetDrops(BaseEntityBlock instance, BlockState blockState, LootParams.Builder builder) {
+	@Redirect(method = "getDrops", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/BaseEntityBlock;getDrops(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/storage/loot/LootContext$Builder;)Ljava/util/List;"))
+	private List onGetDrops(BaseEntityBlock instance, BlockState blockState, LootContext.Builder builder) {
 		var drops = super.getDrops(blockState, builder);
 		var blockEntity = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
 		if (blockEntity instanceof ShulkerBoxBlockEntity shulker) {

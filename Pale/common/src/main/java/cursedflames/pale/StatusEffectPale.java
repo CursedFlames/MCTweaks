@@ -17,10 +17,10 @@ public class StatusEffectPale extends MobEffect {
 
 	@Override
 	public void applyEffectTick(LivingEntity entity, int amplifier) {
-		if (entity.level().isDay() && !entity.fireImmune() && !entity.isInWaterRainOrBubble() && !entity.isInPowderSnow) {
+		if (entity.getLevel().isDay() && !entity.fireImmune() && !entity.isInWaterRainOrBubble() && !entity.isInPowderSnow) {
 			BlockPos pos = BlockPos.containing(entity.getX(), entity.getEyeY(), entity.getZ());
-			if (entity.level().canSeeSky(pos)) {
-				var biome = entity.level().getBiome(pos);
+			if (entity.getLevel().canSeeSky(pos)) {
+				var biome = entity.getLevel().getBiome(pos);
 				float damage = (biome.isBound() && !biome.value().hasPrecipitation()) ? 2 : 1;
 				entity.hurt(entity.damageSources().onFire(), damage);
 			}
