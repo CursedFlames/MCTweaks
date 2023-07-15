@@ -1,5 +1,2 @@
-### v1.20.X-1.0.1
-* Fix filling buckets when there are empty buckets in multiple slots at once
-
-### v1.20.X-1.0.0
-* Initial release
+### v1.20.X-1.0.2
+* Fix crash when attempting to fill a bucket with all slots full and no single-item bucket stack
