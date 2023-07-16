@@ -2,9 +2,11 @@ package cursedflames.pale;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.biome.Biome;
 
 public class StatusEffectPale extends MobEffect {
 	public static final ResourceLocation ID = new ResourceLocation("pale", "pale");
@@ -18,11 +20,11 @@ public class StatusEffectPale extends MobEffect {
 	@Override
 	public void applyEffectTick(LivingEntity entity, int amplifier) {
 		if (entity.getLevel().isDay() && !entity.fireImmune() && !entity.isInWaterRainOrBubble() && !entity.isInPowderSnow) {
-			BlockPos pos = BlockPos.containing(entity.getX(), entity.getEyeY(), entity.getZ());
+			BlockPos pos = new BlockPos(entity.getX(), entity.getEyeY(), entity.getZ());
 			if (entity.getLevel().canSeeSky(pos)) {
 				var biome = entity.getLevel().getBiome(pos);
-				float damage = (biome.isBound() && !biome.value().hasPrecipitation()) ? 2 : 1;
-				entity.hurt(entity.damageSources().onFire(), damage);
+				float damage = (biome.isBound() && !biome.value().getPrecipitation().equals(Biome.Precipitation.NONE)) ? 2 : 1;
+				entity.hurt(DamageSource.ON_FIRE, damage);
 			}
 		}
 	}

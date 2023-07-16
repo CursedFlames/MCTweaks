@@ -24,7 +24,7 @@ public class MixinShulkerBlockColoring {
 	 * @reason Change shulker box dyeing logic to allow for dyeing individual halves
 	 */
 	@Overwrite
-	public ItemStack assemble(CraftingContainer craftingContainer, RegistryAccess registryAccess) {
+	public ItemStack assemble(CraftingContainer craftingContainer) {
 		ItemStack shulkerStack = ItemStack.EMPTY;
 		DyeItem dyeItem = (DyeItem) Items.WHITE_DYE;
 		int shulkerPos = 0;

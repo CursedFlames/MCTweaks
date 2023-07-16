@@ -4,11 +4,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import cursedflames.splitshulkers.SplitShulkerBoxBlockEntity;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
@@ -21,7 +20,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static cursedflames.splitshulkers.SplitShulkers.allColorPairs;
-import static cursedflames.splitshulkers.SplitShulkers.nullableColorFromString;
 import static cursedflames.splitshulkers.SplitShulkers.secondaryColorFromTag;
 
 @Mixin(BlockEntityWithoutLevelRenderer.class)
@@ -48,7 +46,7 @@ public class MixinBlockEntityWithoutLevelRenderer {
 	@Shadow @Final private BlockEntityRenderDispatcher blockEntityRenderDispatcher;
 
 	@Inject(method = "renderByItem", cancellable = true, at = @At(value = "INVOKE", shift = At.Shift.BEFORE, target = "Lnet/minecraft/world/level/block/ShulkerBoxBlock;getColorFromItem(Lnet/minecraft/world/item/Item;)Lnet/minecraft/world/item/DyeColor;"))
-	private void onRenderByItem(ItemStack stack, ItemDisplayContext displayContext, PoseStack poseStack, MultiBufferSource bufferSource, int i, int j, CallbackInfo ci) {
+	private void onRenderByItem(ItemStack stack, ItemTransforms.TransformType displayContext, PoseStack poseStack, MultiBufferSource bufferSource, int i, int j, CallbackInfo ci) {
 		var color1 = ShulkerBoxBlock.getColorFromItem(stack.getItem());
 		var tag = BlockItem.getBlockEntityData(stack);
 		var color2 = secondaryColorFromTag(tag, color1);

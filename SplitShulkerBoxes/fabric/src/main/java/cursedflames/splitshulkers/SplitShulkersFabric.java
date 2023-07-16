@@ -1,9 +1,8 @@
 package cursedflames.splitshulkers;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;
@@ -18,11 +17,11 @@ public class SplitShulkersFabric extends SplitShulkers implements ModInitializer
 		var tag = new CompoundTag();
 		secondaryColorToTag(DyeColor.WHITE, tag);
 		BlockItem.setBlockEntityData(iconStack, BlockEntityType.SHULKER_BOX, tag);
-		FabricItemGroup
-				.builder(new ResourceLocation("splitshulkers", "boxes"))
-				.title(Component.translatable("splitshulkers.category"))
+		FabricItemGroupBuilder
+				.create(new ResourceLocation("splitshulkers", "boxes"))
+//				.title(new TranslatableComponent("splitshulkers.category"))
 				.icon(() -> iconStack)
-				.displayItems((params, output) -> output.acceptAll(getAllShulkerBoxes()))
+				.appendItems((stacks) -> stacks.addAll(getAllShulkerBoxes()))
 				.build();
 	}
 }

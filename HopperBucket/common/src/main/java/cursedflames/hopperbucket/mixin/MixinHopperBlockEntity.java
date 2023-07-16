@@ -30,12 +30,12 @@ public class MixinHopperBlockEntity {
 		if (bucketStackIndex == -1) return;
 		var bucketStack = hopper.getItem(bucketStackIndex);
 
-		var pos = BlockPos.containing(hopper.getLevelX(), hopper.getLevelY() + 1.0, hopper.getLevelZ());
+		var pos = new BlockPos(hopper.getLevelX(), hopper.getLevelY() + 1.0, hopper.getLevelZ());
 		var blockState = level.getBlockState(pos);
 		if (blockState.getBlock() instanceof BucketPickup bucketPickup) {
 			var pickup = bucketPickup.pickupBlock(level, pos, blockState);
 			if (pickup.isEmpty()) return;
-			bucketPickup.getPickupSound().ifPresent(soundEvent -> level.playSound(null, pos, soundEvent, SoundSource.BLOCKS));
+			bucketPickup.getPickupSound().ifPresent(soundEvent -> level.playSound(null, pos, soundEvent, SoundSource.BLOCKS, 1f, 1f));
 			level.gameEvent(hopper instanceof Entity ? (Entity) hopper : null, GameEvent.FLUID_PICKUP, pos);
 			bucketStack.shrink(1);
 			if (bucketStack.isEmpty()) {

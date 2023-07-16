@@ -3,6 +3,7 @@ package cursedflames.splitshulkers.mixin;
 import cursedflames.splitshulkers.SplitShulkerBoxBlockEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -38,7 +39,7 @@ public abstract class MixinShulkerBoxBlock extends BaseEntityBlock {
 		var tag = BlockItem.getBlockEntityData(stack);
 		var color2 = secondaryColorFromTag(tag, color1);
 		if (color1 == color2) return;
-		components.add(1, Component.translatable("splitshulkers.secondarycolor").append(color2 == null ? Component.translatable("gui.none") : Component.translatable("color.minecraft." + color2.getName())));
+		components.add(1, new TranslatableComponent("splitshulkers.secondarycolor").append(color2 == null ? new TranslatableComponent("gui.none") : new TranslatableComponent("color.minecraft." + color2.getName())));
 	}
 
 	@Redirect(method = "getDrops", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/BaseEntityBlock;getDrops(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/storage/loot/LootContext$Builder;)Ljava/util/List;"))

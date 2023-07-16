@@ -1,10 +1,10 @@
 package cursedflames.pale;
 
+import net.minecraft.world.effect.MobEffect;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegisterEvent;
 
 @Mod("pale")
 public class PaleMod {
@@ -13,9 +13,7 @@ public class PaleMod {
 	}
 
 	@SubscribeEvent
-	public void register(RegisterEvent event) {
-		event.register(ForgeRegistries.MOB_EFFECTS.getRegistryKey(), helper -> {
-			helper.register(StatusEffectPale.ID, StatusEffectPale.PALE);
-		});
+	public void register(RegistryEvent.Register<MobEffect> event) {
+		event.getRegistry().register(StatusEffectPale.PALE.setRegistryName(StatusEffectPale.ID));
 	}
 }
