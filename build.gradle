@@ -2,7 +2,7 @@ plugins {
 	// TODO for reproducible builds and general toolchain safety, we should really pin to specific versions instead of using SNAPSHOT etc
 	// see https://github.com/fractureiser-investigation/fractureiser/blob/94f35c5343732b4bf97124ce1cad5744e4ee3602/docs/2023-06-08-meeting.md#discussion-and-action-items-1
     id("fabric-loom") version "1.6-SNAPSHOT" apply(false)
-    id("net.neoforged.gradle.userdev") version "7.0.142" apply(false)
+    id("net.neoforged.gradle.userdev") version "7.0.145" apply(false)
     id("org.spongepowered.gradle.vanilla") version "0.2.1-SNAPSHOT" apply(false)
     id("org.spongepowered.mixin") version "0.7-SNAPSHOT" apply(false) // TODO now that NF uses fabric mixin do we still need this?
 	// Publishing
@@ -298,9 +298,9 @@ subprojects {
 
 			processResources {
 				from project.parent.childProjects.get("common").sourceSets.main.resources
-				// Doing this here instead of earlier on fixes `mods.toml` not getting processed properly, for some reason
+				// Doing this here instead of earlier on fixes `neoforge.mods.toml` not getting processed properly, for some reason
 				// TODO is this still necessary?
-				filesMatching(['META-INF/mods.toml']) {
+				filesMatching(['META-INF/neoforge.mods.toml']) {
 					expand project.properties
 				}
 			}
