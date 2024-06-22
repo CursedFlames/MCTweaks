@@ -4,9 +4,7 @@
 	"package": "cursedflames.stackablepotions.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
-		"MixinBrewingStandMenu",
 		"MixinItems",
-		"MixinPotionItem",
 		"MixinSplashPotionItem"
 	],
 	"client": [

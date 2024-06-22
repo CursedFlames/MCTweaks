@@ -18,6 +18,6 @@ public class MixinFoodComponents {
 	// Remove the vanilla hunger status effect from rotten flesh
 	@Inject(method = "<clinit>", at = @At("RETURN"))
 	private static void onInit(CallbackInfo ci) {
-		((FoodPropertiesAccessor) ROTTEN_FLESH).getEffectsRaw().remove(0);
+		((FoodPropertiesAccessor) (Object) ROTTEN_FLESH).getEffectsRaw().remove(0);
 	}
 }
