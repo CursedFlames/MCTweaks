@@ -214,7 +214,7 @@ subprojects {
 			if (modrinthProjectId != null) apply plugin: "com.modrinth.minotaur"
 			if (curseProjectId != null) apply plugin: "net.darkhax.curseforgegradle"
 			base {
-				archivesName = "${mod_name}-forge-${minecraft_version}-${mod_version}"
+				archivesName = "${mod_name}-neoforge-${minecraft_version}-${mod_version}"
 			}
 
 			test.enabled = false // somehow the test task that was never configured anywhere is breaking things?? idk
@@ -326,7 +326,7 @@ subprojects {
 					mainFile.changelogType = "markdown"
 					mainFile.changelog = project.parent.file("changelog.md")
 					mainFile.releaseType = "${mod_version}".startsWith("0") ? "beta" : "release"
-					mainFile.displayName = "${display_mc_version}-${mod_version}-forge"
+					mainFile.displayName = "${display_mc_version}-${mod_version}-neoforge"
 				}
 			}
 			if (modrinthProjectId != null) {
