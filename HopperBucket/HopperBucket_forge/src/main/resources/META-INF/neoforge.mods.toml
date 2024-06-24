@@ -16,8 +16,6 @@ ${mod_description}
 ''' #mandatory (Supports multiline text)
 [[mixins]]
 config="hopperbucket.mixins.json"
-[[mixins]]
-config="hopperbucket.forge.mixins.json"
 [[dependencies.hopperbucket]] #optional
 modId = "neoforge" #mandatory
 mandatory = true #mandatory

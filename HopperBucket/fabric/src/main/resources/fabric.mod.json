@@ -17,8 +17,7 @@
         ]
     },
     "mixins": [
-        "hopperbucket.mixins.json",
-		"hopperbucket.fabric.mixins.json"
+        "hopperbucket.mixins.json"
     ],
     "depends": {
         "fabricloader": "${fabric_loader_version_pattern}",
