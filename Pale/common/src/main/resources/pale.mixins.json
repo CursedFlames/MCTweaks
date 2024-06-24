@@ -5,8 +5,7 @@
 	"refmap": "${mod_id}.refmap.json",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
-		"FoodPropertiesAccess",
-		"MixinFoodComponents",
+		"MixinFoods",
 		"MixinLivingEntity"
 	],
 	"client": [
