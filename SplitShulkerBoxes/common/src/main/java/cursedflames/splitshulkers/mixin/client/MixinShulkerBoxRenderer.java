@@ -1,5 +1,6 @@
 package cursedflames.splitshulkers.mixin.client;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import cursedflames.splitshulkers.SplitShulkerBoxBlockEntity;
@@ -31,18 +32,18 @@ public class MixinShulkerBoxRenderer {
 		cancellable = true,
 		locals = LocalCapture.CAPTURE_FAILHARD
 	)
-	private void onRender(ShulkerBoxBlockEntity shulkerBox, float f, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int j, CallbackInfo ci, Direction direction, Material material) {
+	private void onRender(ShulkerBoxBlockEntity shulkerBox, float f, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int j, CallbackInfo ci, @Local(ordinal = 0) Direction direction, @Local(ordinal = 0) Material material) {
 //		if (false) return; // TODO check for non-split shulkers
-		ci.cancel();
 		var color2 = ((SplitShulkerBoxBlockEntity) shulkerBox).splitshulkers_getSecondaryColor();
 		var model = (ShulkerModelGetter) this.model;
 		// Render base with new color
 		Material material2 = color2 == null ? Sheets.DEFAULT_SHULKER_TEXTURE_LOCATION : Sheets.SHULKER_TEXTURE_LOCATION.get(color2.ordinal());
 		VertexConsumer vertexConsumer2 = material2.buffer(multiBufferSource, RenderType::entityCutoutNoCull);
-		model.getBase().render(poseStack, vertexConsumer2, i, j, 1.0f, 1.0f, 1.0f, 1.0f);
+		model.getBase().render(poseStack, vertexConsumer2, i, j);
 		// Render lid normally
 		VertexConsumer vertexConsumer = material.buffer(multiBufferSource, RenderType::entityCutoutNoCull);
-		model.getLid().render(poseStack, vertexConsumer, i, j, 1.0f, 1.0f, 1.0f, 1.0f);
+		model.getLid().render(poseStack, vertexConsumer, i, j);
 		poseStack.popPose();
+		ci.cancel();
 	}
 }

@@ -3,7 +3,6 @@ package cursedflames.splitshulkers;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -11,18 +10,16 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.RegisterEvent;
+import net.neoforged.neoforge.registries.RegisterEvent;
 
 @Mod("splitshulkers")
 public class SplitShulkersForge extends SplitShulkers {
-	public SplitShulkersForge() {
-		FMLJavaModLoadingContext.get().getModEventBus().register(this);
+	public SplitShulkersForge(IEventBus eventBus) {
+		eventBus.addListener(this::register);
 	}
 
-	@SubscribeEvent
 	public void register(RegisterEvent event) {
 		event.register(Registries.CREATIVE_MODE_TAB, helper -> {
 			var iconStack = new ItemStack(Blocks.BLACK_SHULKER_BOX);
@@ -36,7 +33,7 @@ public class SplitShulkersForge extends SplitShulkers {
 					.icon(() -> iconStack)
 					.displayItems((params, output) -> output.acceptAll(getAllShulkerBoxes()))
 					.build();
-			helper.register(new ResourceLocation("splitshulkers", "boxes"), itemGroup);
+			helper.register(CREATIVE_TAB_ID, itemGroup);
 		});
 	}
 }

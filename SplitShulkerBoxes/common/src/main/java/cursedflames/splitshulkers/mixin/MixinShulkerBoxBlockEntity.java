@@ -2,6 +2,7 @@ package cursedflames.splitshulkers.mixin;
 
 import cursedflames.splitshulkers.SplitShulkerBoxBlockEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.item.DyeColor;
@@ -56,14 +57,14 @@ public abstract class MixinShulkerBoxBlockEntity extends RandomizableContainerBl
 	}
 
 	@Inject(method = "saveAdditional", at = @At(value = "HEAD"))
-	public void onSaveAdditional(CompoundTag tag, CallbackInfo ci) {
+	public void onSaveAdditional(CompoundTag tag, HolderLookup.Provider provider, CallbackInfo ci) {
 		if (this.getColor() != splitshulkers_secondaryColor) {
 			secondaryColorToTag(splitshulkers_secondaryColor, tag);
 		}
 	}
 
 	@Inject(method = "loadFromTag", at = @At("HEAD"))
-	public void onLoadFromTag(CompoundTag tag, CallbackInfo ci) {
+	public void onLoadFromTag(CompoundTag tag, HolderLookup.Provider provider, CallbackInfo ci) {
 		splitshulkers_secondaryColor = secondaryColorFromTag(tag, this.getColor());
 	}
 
@@ -73,8 +74,8 @@ public abstract class MixinShulkerBoxBlockEntity extends RandomizableContainerBl
 	}
 
 	@Override
-	public @NotNull CompoundTag getUpdateTag() {
-		var tag = super.getUpdateTag();
+	public @NotNull CompoundTag getUpdateTag(HolderLookup.Provider provider) {
+		var tag = super.getUpdateTag(provider);
 		var color = this.getColor();
 		var color2 = this.splitshulkers_secondaryColor;
 		if (color != color2) {

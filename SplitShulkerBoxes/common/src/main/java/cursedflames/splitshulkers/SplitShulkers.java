@@ -1,7 +1,9 @@
 package cursedflames.splitshulkers;
 
 import it.unimi.dsi.fastutil.Pair;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
@@ -14,11 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SplitShulkers {
+	protected static final ResourceLocation CREATIVE_TAB_ID = ResourceLocation.fromNamespaceAndPath("splitshulkers", "boxes");
+
 	static ItemStack iconStack;
 
 	static {
 		iconStack = new ItemStack(Blocks.BLACK_SHULKER_BOX);
-		iconStack.getOrCreateTag().putString("secondaryColor", "white");
 	}
 
 	public static List<Pair<DyeColor, DyeColor>> allColorPairs;
@@ -77,5 +80,11 @@ public class SplitShulkers {
 			stacks.add(stack);
 		}
 		return stacks;
+	}
+
+	public static @Nullable CompoundTag getItemBlockEntityTagUnsafe(ItemStack stack) {
+		var component = stack.get(DataComponents.BLOCK_ENTITY_DATA);
+		if (component == null) return null;
+		return component.getUnsafe();
 	}
 }

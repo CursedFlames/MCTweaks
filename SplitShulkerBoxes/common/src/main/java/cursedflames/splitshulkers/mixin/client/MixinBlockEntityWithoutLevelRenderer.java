@@ -6,8 +6,6 @@ import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
@@ -21,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static cursedflames.splitshulkers.SplitShulkers.allColorPairs;
-import static cursedflames.splitshulkers.SplitShulkers.nullableColorFromString;
+import static cursedflames.splitshulkers.SplitShulkers.getItemBlockEntityTagUnsafe;
 import static cursedflames.splitshulkers.SplitShulkers.secondaryColorFromTag;
 
 @Mixin(BlockEntityWithoutLevelRenderer.class)
@@ -50,7 +48,7 @@ public class MixinBlockEntityWithoutLevelRenderer {
 	@Inject(method = "renderByItem", cancellable = true, at = @At(value = "INVOKE", shift = At.Shift.BEFORE, target = "Lnet/minecraft/world/level/block/ShulkerBoxBlock;getColorFromItem(Lnet/minecraft/world/item/Item;)Lnet/minecraft/world/item/DyeColor;"))
 	private void onRenderByItem(ItemStack stack, ItemDisplayContext displayContext, PoseStack poseStack, MultiBufferSource bufferSource, int i, int j, CallbackInfo ci) {
 		var color1 = ShulkerBoxBlock.getColorFromItem(stack.getItem());
-		var tag = BlockItem.getBlockEntityData(stack);
+		var tag = getItemBlockEntityTagUnsafe(stack);
 		var color2 = secondaryColorFromTag(tag, color1);
 		var index = 17 * (color1 == null ? 0 : color1.getId()+1) + (color2 == null ? 0 : color2.getId()+1);
 		this.blockEntityRenderDispatcher.renderItem(splitshulkers_AllShulkerBoxes[index], poseStack, bufferSource, i, j);

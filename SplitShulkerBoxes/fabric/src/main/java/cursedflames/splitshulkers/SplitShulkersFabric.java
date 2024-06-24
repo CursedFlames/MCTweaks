@@ -6,7 +6,6 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
@@ -26,6 +25,6 @@ public class SplitShulkersFabric extends SplitShulkers implements ModInitializer
 				.icon(() -> iconStack)
 				.displayItems((params, output) -> output.acceptAll(getAllShulkerBoxes()))
 				.build();
-		Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, new ResourceLocation("splitshulkers", "boxes"), itemGroup);
+		Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, CREATIVE_TAB_ID, itemGroup);
 	}
 }
