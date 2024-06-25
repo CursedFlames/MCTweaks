@@ -53,13 +53,13 @@ public class MixinShulkerBlockColoring {
 
 		var blockData = getItemBlockEntityTagUnsafe(outputStack);
 		if (blockData != null) blockData = blockData.copy();
+		if (blockData == null) blockData = new CompoundTag();
 		if (secondaryColor != primaryColor) {
-			if (blockData == null) blockData = new CompoundTag();
 			SplitShulkers.secondaryColorToTag(secondaryColor, blockData);
-			BlockItem.setBlockEntityData(outputStack, BlockEntityType.SHULKER_BOX, blockData);
 		} else {
-			if (blockData != null) blockData.remove("secondaryColor");
+			blockData.remove("secondaryColor");
 		}
+		BlockItem.setBlockEntityData(outputStack, BlockEntityType.SHULKER_BOX, blockData);
 		return outputStack;
 	}
 }
