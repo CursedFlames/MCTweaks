@@ -52,6 +52,7 @@ public class MixinShulkerBlockColoring {
 		var outputStack = shulkerStack.transmuteCopy(block, 1);
 
 		var blockData = getItemBlockEntityTagUnsafe(outputStack);
+		if (blockData != null) blockData = blockData.copy();
 		if (secondaryColor != primaryColor) {
 			if (blockData == null) blockData = new CompoundTag();
 			SplitShulkers.secondaryColorToTag(secondaryColor, blockData);

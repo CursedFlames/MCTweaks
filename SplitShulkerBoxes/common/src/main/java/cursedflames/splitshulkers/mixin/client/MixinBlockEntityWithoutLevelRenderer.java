@@ -1,22 +1,26 @@
 package cursedflames.splitshulkers.mixin.client;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import cursedflames.splitshulkers.SplitShulkerBoxBlockEntity;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static cursedflames.splitshulkers.SplitShulkers.allColorPairs;
 import static cursedflames.splitshulkers.SplitShulkers.getItemBlockEntityTagUnsafe;
@@ -43,15 +47,18 @@ public class MixinBlockEntityWithoutLevelRenderer {
 		}
 	}
 
-	@Shadow @Final private BlockEntityRenderDispatcher blockEntityRenderDispatcher;
-
-	@Inject(method = "renderByItem", cancellable = true, at = @At(value = "INVOKE", shift = At.Shift.BEFORE, target = "Lnet/minecraft/world/level/block/ShulkerBoxBlock;getColorFromItem(Lnet/minecraft/world/item/Item;)Lnet/minecraft/world/item/DyeColor;"))
-	private void onRenderByItem(ItemStack stack, ItemDisplayContext displayContext, PoseStack poseStack, MultiBufferSource bufferSource, int i, int j, CallbackInfo ci) {
-		var color1 = ShulkerBoxBlock.getColorFromItem(stack.getItem());
-		var tag = getItemBlockEntityTagUnsafe(stack);
-		var color2 = secondaryColorFromTag(tag, color1);
-		var index = 17 * (color1 == null ? 0 : color1.getId()+1) + (color2 == null ? 0 : color2.getId()+1);
-		this.blockEntityRenderDispatcher.renderItem(splitshulkers_AllShulkerBoxes[index], poseStack, bufferSource, i, j);
-		ci.cancel();
+	@WrapOperation(method = "renderByItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/blockentity/BlockEntityRenderDispatcher;renderItem(Lnet/minecraft/world/level/block/entity/BlockEntity;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;II)Z"))
+	private boolean onRenderByItem(BlockEntityRenderDispatcher instance, BlockEntity blockEntity, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int j, Operation<Boolean> original,
+								   @Local(ordinal = 0) ItemStack stack, @Local(ordinal = 0) Item item, @Local(ordinal = 0) Block block) {
+		if (block instanceof ShulkerBoxBlock) {
+			DyeColor color1 = ShulkerBoxBlock.getColorFromItem(item);
+			var tag = getItemBlockEntityTagUnsafe(stack);
+			var color2 = secondaryColorFromTag(tag, color1);
+			if (color1 != color2) {
+				var index = 17 * (color1 == null ? 0 : color1.getId() + 1) + (color2 == null ? 0 : color2.getId() + 1);
+				return original.call(instance, splitshulkers_AllShulkerBoxes[index], poseStack, multiBufferSource, i, j);
+			}
+		}
+		return original.call(instance, blockEntity, poseStack, multiBufferSource, i, j);
 	}
 }
