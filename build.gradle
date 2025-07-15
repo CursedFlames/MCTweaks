@@ -7,7 +7,7 @@ plugins {
     id("org.spongepowered.mixin") version "0.7-SNAPSHOT" apply(false) // TODO now that NF uses fabric mixin do we still need this?
 	// Publishing
 	id("com.modrinth.minotaur") version "2.+" apply(false)
-	id("net.darkhax.curseforgegradle") version "1.1.15" apply(false)
+	id("net.darkhax.curseforgegradle") version "1.1.26" apply(false)
 	// Environment variables (API keys)
 	id("co.uzzu.dotenv.gradle") version "2.0.0"
 	// Reproducible builds
@@ -159,7 +159,7 @@ subprojects {
 				task publishCurseforge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
 					group = "publishing"
 					apiToken = env.CURSEFORGE_TOKEN.value
-//					debugMode = true
+					debugMode = env.ACTUALLY_PUBLISH.orNull() != "true"
 
 					// A project ID is required to tell CurseForge which project the uploaded
 					// file belongs to. This is public on your project page and is not private
@@ -180,7 +180,7 @@ subprojects {
 			if (modrinthProjectId != null) {
 				modrinth {
 					token = env.MODRINTH_TOKEN.value
-//					debugMode = true
+					debugMode = env.ACTUALLY_PUBLISH.orNull() != "true"
 
 					projectId = modrinthProjectId
 					versionNumber = project.mod_version
@@ -312,7 +312,7 @@ subprojects {
 				task publishCurseforge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
 					group = "publishing"
 					apiToken = env.CURSEFORGE_TOKEN.value
-//					debugMode = true
+					debugMode = env.ACTUALLY_PUBLISH.orNull() != "true"
 
 					// A project ID is required to tell CurseForge which project the uploaded
 					// file belongs to. This is public on your project page and is not private
@@ -332,7 +332,7 @@ subprojects {
 			if (modrinthProjectId != null) {
 				modrinth {
 					token = env.MODRINTH_TOKEN.value
-//					debugMode = true
+					debugMode = env.ACTUALLY_PUBLISH.orNull() != "true"
 
 					projectId = modrinthProjectId
 					versionNumber = project.mod_version
