@@ -1,8 +1,8 @@
 plugins {
 	// TODO for reproducible builds and general toolchain safety, we should really pin to specific versions instead of using SNAPSHOT etc
 	// see https://github.com/fractureiser-investigation/fractureiser/blob/94f35c5343732b4bf97124ce1cad5744e4ee3602/docs/2023-06-08-meeting.md#discussion-and-action-items-1
-    id("fabric-loom") version "1.6-SNAPSHOT" apply(false)
-    id("net.neoforged.gradle.userdev") version "7.0.145" apply(false)
+    id("fabric-loom") version "${loom_version}" apply(false)
+    id("net.neoforged.moddev") version "2.0.62-beta" apply(false)
     id("org.spongepowered.gradle.vanilla") version "0.2.1-SNAPSHOT" apply(false)
     id("org.spongepowered.mixin") version "0.7-SNAPSHOT" apply(false) // TODO now that NF uses fabric mixin do we still need this?
 	// Publishing
@@ -209,7 +209,7 @@ subprojects {
 
 			apply plugin: 'idea'
 			apply plugin: 'maven-publish'
-			apply plugin: 'net.neoforged.gradle.userdev'
+			apply plugin: 'net.neoforged.moddev'
 //			apply plugin: 'org.spongepowered.mixin' // TODO is this necessary?
 			if (modrinthProjectId != null) apply plugin: "com.modrinth.minotaur"
 			if (curseProjectId != null) apply plugin: "net.darkhax.curseforgegradle"
@@ -218,77 +218,43 @@ subprojects {
 			}
 
 			test.enabled = false // somehow the test task that was never configured anywhere is breaking things?? idk
-			// FIXME how do we configure mixins on neoforge?
-//			mixin {
-//				add(sourceSets.main, "${mod_id}.refmap.json")
-//
-//				config("${mod_id}.mixins.json")
-//				if (file("src/main/resources/${mod_id}.forge.mixins.json").exists()) {
-//					config("${mod_id}.forge.mixins.json")
-//				}
-//			}
 
-//			minecraft {
-//				mappings channel: 'official', version: minecraft_version
-//
-			// FIXME ATs?
-//				// Automatically enable forge AccessTransformers if the file exists
-//				// This location is hardcoded in Forge and can not be changed.
-//				// https://github.com/MinecraftForge/MinecraftForge/blob/be1698bb1554f9c8fa2f58e32b9ab70bc4385e60/fmlloader/src/main/java/net/minecraftforge/fml/loading/moddiscovery/ModFile.java#L123
-//				if (file('src/main/resources/META-INF/accesstransformer.cfg').exists()) {
-//					accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+			neoForge {
+				version = forge_version
+				// Automatically enable neoforge AccessTransformers if the file exists
+				def at = project.parent.childProjects.get("common").file('src/main/resources/META-INF/accesstransformer.cfg')
+				if (at.exists()) {
+					accessTransformers.from(at.absolutePath)
+				}
+//				parchment {
+//					minecraftVersion = parchment_minecraft
+//					mappingsVersion = parchment_version
 //				}
-
 				runs {
+					configureEach {
+						systemProperty('neoforge.enabledGameTestNamespaces', mod_id)
+						ideName = "NeoForge ${it.name.capitalize()} (${project.path})" // Unify the run config names with fabric
+					}
 					client {
-						workingDirectory project.file('run')
-//						ideaModule "${rootProject.name}.${project.parent.name}.${project.name}.main"
-//						taskName 'Client'
-						systemProperty 'mixin.env.remapRefMap', 'true'
-						systemProperty 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-//						mods {
-//							modClientRun {
-//								source sourceSets.main
-//								source project.parent.childProjects.get("common").sourceSets.main
-//							}
-//						}
+						client()
 					}
-
-					server {
-						workingDirectory project.file('run')
-//						ideaModule "${rootProject.name}.${project.parent.name}.${project.name}.main"
-//						taskName 'Server'
-						systemProperty 'mixin.env.remapRefMap', 'true'
-						systemProperty 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-//						mods {
-//							modServerRun {
-//								source sourceSets.main
-//								source project.parent.childProjects.get("common").sourceSets.main
-//							}
-//						}
-					}
-
 					data {
-						workingDirectory project.file('run')
-//						ideaModule "${rootProject.name}.${project.parent.name}.${project.name}.main"
-//						args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-//						taskName 'Data'
-						systemProperty 'mixin.env.remapRefMap', 'true'
-						systemProperty 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-//						mods {
-//							modDataRun {
-//								source sourceSets.main
-//								source project.parent.childProjects.get("common").sourceSets.main
-//							}
-//						}
+						data()
+					}
+					server {
+						server()
 					}
 				}
-//			}
+				mods {
+					"${mod_id}" {
+						sourceSet sourceSets.main
+					}
+				}
+			}
 
 			sourceSets.main.resources.srcDir 'src/generated/resources'
 
 			dependencies {
-				implementation "net.neoforged:neoforge:${forge_version}"
 				compileOnly project.parent.childProjects.get("common")
 			}
 
@@ -327,6 +293,7 @@ subprojects {
 					mainFile.changelog = project.parent.file("changelog.md")
 					mainFile.releaseType = "${mod_version}".startsWith("0") ? "beta" : "release"
 					mainFile.displayName = "${display_mc_version}-${mod_version}-neoforge"
+					mainFile.addModLoader("NeoForge")
 				}
 			}
 			if (modrinthProjectId != null) {
@@ -339,6 +306,7 @@ subprojects {
 					versionName = "${display_mc_version}-${mod_version}-neoforge"
 					versionType = "${mod_version}".startsWith("0") ? "beta" : "release"
 					uploadFile = jar
+					loaders = ["neoforge"]
 					gameVersions = [minecraft_version] //modrinthMcVersions == null ? [minecraft_version] : modrinthMcVersions.split(";").map {it.trim()}
 					dependencies {
 					}
