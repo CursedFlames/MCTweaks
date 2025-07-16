@@ -218,6 +218,7 @@ subprojects {
 			}
 
 			test.enabled = false // somehow the test task that was never configured anywhere is breaking things?? idk
+			compileTestJava.enabled = false
 
 			neoForge {
 				version = forge_version
@@ -256,6 +257,7 @@ subprojects {
 
 			dependencies {
 				compileOnly project.parent.childProjects.get("common")
+				testCompileOnly project.parent.childProjects.get("common")
 			}
 
 			tasks.withType(JavaCompile).configureEach {
