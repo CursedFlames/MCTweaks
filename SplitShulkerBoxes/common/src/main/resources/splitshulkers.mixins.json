@@ -6,14 +6,12 @@
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
 		"MixinBlockEntity",
-		"MixinShulkerBlockColoring",
 		"MixinShulkerBoxBlock",
 		"MixinShulkerBoxBlockEntity"
 	],
 	"client": [
 		"client.MixinBlockEntityWithoutLevelRenderer",
-		"client.MixinShulkerBoxRenderer",
-		"client.ShulkerModelAccess"
+		"client.MixinShulkerBoxRenderer"
 	],
 	"server": [
 	],

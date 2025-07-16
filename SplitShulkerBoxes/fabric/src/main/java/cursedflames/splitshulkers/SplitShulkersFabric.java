@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
@@ -26,5 +27,8 @@ public class SplitShulkersFabric extends SplitShulkers implements ModInitializer
 				.displayItems((params, output) -> output.acceptAll(getAllShulkerBoxes()))
 				.build();
 		Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, CREATIVE_TAB_ID, itemGroup);
+		var recipeSerializer = new CustomRecipe.Serializer<>(ShulkerBoxColoring::new);
+		Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, "splitshulkers:crafting_special_shulkerboxcoloring", recipeSerializer);
+		ShulkerBoxColoring.setRecipeSerializer(recipeSerializer);
 	}
 }

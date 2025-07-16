@@ -27,6 +27,7 @@
         "java": ">=${min_java_version}"
     },
     "suggests": {
-    }
+    },
+    "accessWidener": "splitshulkers.accesswidener"
 }
   

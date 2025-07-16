@@ -10,19 +10,19 @@ import org.spongepowered.asm.mixin.injection.Slice;
 public abstract class MixinItems {
 	@ModifyArg(method = "<clinit>",
 			at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/Item$Properties;stacksTo(I)Lnet/minecraft/world/item/Item$Properties;", ordinal = 0),
-			slice = @Slice( from = @At(value = "NEW", target = "Lnet/minecraft/world/item/PotionItem;")))
+			slice = @Slice( from = @At(value = "CONSTANT", args = "stringValue=potion")))
 	private static int onPotion(int old) {
 		return 16;
 	}
 	@ModifyArg(method = "<clinit>",
 			at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/Item$Properties;stacksTo(I)Lnet/minecraft/world/item/Item$Properties;", ordinal = 0),
-			slice = @Slice( from = @At(value = "NEW", target = "Lnet/minecraft/world/item/SplashPotionItem;")))
+			slice = @Slice( from = @At(value = "CONSTANT", args = "stringValue=splash_potion")))
 	private static int onSplashPotion(int old) {
 		return 16;
 	}
 	@ModifyArg(method = "<clinit>",
 			at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/Item$Properties;stacksTo(I)Lnet/minecraft/world/item/Item$Properties;", ordinal = 0),
-			slice = @Slice( from = @At(value = "NEW", target = "Lnet/minecraft/world/item/LingeringPotionItem;")))
+			slice = @Slice( from = @At(value = "CONSTANT", args = "stringValue=lingering_potion")))
 	private static int onLingeringPotion(int old) {
 		return 16;
 	}

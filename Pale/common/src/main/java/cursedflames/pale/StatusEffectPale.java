@@ -2,6 +2,7 @@ package cursedflames.pale;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
@@ -14,11 +15,11 @@ public class StatusEffectPale extends MobEffect {
 	}
 
 	@Override
-	public boolean applyEffectTick(LivingEntity entity, int amplifier) {
-		if (entity.level().isDay() && !entity.fireImmune() && !entity.isInWaterRainOrBubble() && !entity.isInPowderSnow) {
+	public boolean applyEffectTick(ServerLevel level, LivingEntity entity, int amplifier) {
+		if (level.isDay() && !entity.fireImmune() && !entity.isInWaterRainOrBubble() && !entity.isInPowderSnow) {
 			BlockPos pos = BlockPos.containing(entity.getX(), entity.getEyeY(), entity.getZ());
-			if (entity.level().canSeeSky(pos)) {
-				var biome = entity.level().getBiome(pos);
+			if (level.canSeeSky(pos)) {
+				var biome = level.getBiome(pos);
 				float damage = (biome.isBound() && !biome.value().hasPrecipitation()) ? 2 : 1;
 				entity.hurt(entity.damageSources().onFire(), damage);
 			}
@@ -28,6 +29,6 @@ public class StatusEffectPale extends MobEffect {
 
 	@Override
 	public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
-		return (duration % (40 * Math.max(1, 4-amplifier))) == 0;
+		return (duration % (20*5)) == 0;
 	}
 }

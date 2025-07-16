@@ -1,9 +1,8 @@
 package cursedflames.stackablepotions.mixin;
 
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.SplashPotionItem;
 import net.minecraft.world.level.Level;
@@ -20,8 +19,8 @@ public abstract class MixinSplashPotionItem extends PotionItem {
 
 	@Inject(method="use", at=@At("RETURN"))
 	private void onUse(Level world, Player user, InteractionHand hand,
-					   CallbackInfoReturnable<InteractionResultHolder<ItemStack>> info) {
+					   CallbackInfoReturnable<InteractionResult> info) {
 		// Add a cooldown so that splash damage/health doesn't become absurdly overpowered when stackable
-		user.getCooldowns().addCooldown(this, 20);
+		user.getCooldowns().addCooldown(user.getItemInHand(hand), 20);
 	}
 }
