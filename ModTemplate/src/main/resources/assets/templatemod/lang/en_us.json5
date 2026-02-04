@@ -1,0 +1,13 @@
+{
+	// comment
+	"modid": {
+		"item": {
+			"foo": "Foo Item",
+			"bar": "Bar Item"
+		},
+		"block": {
+			"foo": "Foo Block",
+			"bar": "Bar Block"
+		}
+	}
+}
