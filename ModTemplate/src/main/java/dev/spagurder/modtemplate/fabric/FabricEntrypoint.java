@@ -1,7 +1,7 @@
 package dev.spagurder.modtemplate.fabric;
 
 //? fabric {
-import dev.kikugie.fletching_table.annotation.fabric.Entrypoint;
+/*import dev.kikugie.fletching_table.annotation.fabric.Entrypoint;
 import dev.spagurder.modtemplate.ExampleEventHandler; // sample_content
 import dev.spagurder.modtemplate.ModTemplate;
 import net.fabricmc.api.ModInitializer;
@@ -23,4 +23,4 @@ public class FabricEntrypoint implements ModInitializer {
     }
 
 }
-//?}
+*///?}

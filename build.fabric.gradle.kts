@@ -186,7 +186,7 @@ val additionalVersions: List<String> = additionalVersionsStr
     ?: emptyList()
 
 val modrinthId = if (hasProperty("publish.modrinth")) property("publish.modrinth") as String else ""
-val curseforgeId = if (hasProperty("publish.curseforge")) property("publish.curseforge") as String else ""
+val curseforgeId = if (hasProperty("publish.curseforge")) property("publish.curseforge") as String else if (hasProperty("publish.curseforge.fabric")) property("publish.curseforge.fabric") as String else ""
 
 if (modrinthId != "" || curseforgeId != "") {
     publishMods {

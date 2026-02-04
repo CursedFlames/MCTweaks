@@ -176,23 +176,20 @@ subproject_name = require_input(f"Subproject name [{mod_id}]: ", mod_id, subproj
 print("This should be a valid Java class name. I do not validate this.")
 mod_class = input("Mod Class [ModTemplate]: ").strip() or 'ModTemplate'
 
-print("The mod group may also be updated. If you are not spagurder, please change this.")
+print("The mod group may also be updated. If you are not CursedFlames, please change this.")
 print("Note: Be careful not to include reserved keywords- I do not check for them!")
-mod_group = require_input(f"Mod Group: [dev.spagurder]: ", 'dev.spagurder', package_name_validator)
+mod_group = require_input(f"Mod Group: [cursedflames]: ", 'cursedflames', package_name_validator)
 
 print("Who is you? I do not validate this at all. If you break the manifest files it's your fault.")
-mod_author = input("Mod Author []: ").strip()
+mod_author = input("Mod Author [CursedFlames]: ").strip() or "CursedFlames"
 
 print("Ditto no validation for the rest of this metadata.")
-mod_contributors = input("Mod Contributors []: ").strip()
 mod_version = input("Mod Version [0.1.0]: ").strip() or '0.1.0'
-mod_license = input("Mod License [ARR]: ").strip() or 'ARR'
+mod_license = input("Mod License [MIT]: ").strip() or 'MIT'
 mod_description = input("Mod Description []: ").strip()
-mod_sources_url = input("Mod Sources URL []: ").strip()
+mod_sources_url = input(f"Mod Sources URL [https://github.com/CursedFlames/MCTweaks/tree/stonecutter/{subproject_name}]: ").strip() or f"https://github.com/CursedFlames/MCTweaks/tree/stonecutter/{subproject_name}"
 mod_homepage_url = input("Mod Homepage URL []: ").strip()
-default_mod_issues_url = mod_sources_url + "/issues" if mod_sources_url != "" else ""
-mod_issues_url = input(f"Mod Issues URL [{default_mod_issues_url}]: ").strip() or default_mod_issues_url
-mod_discord_url = input("Mod Discord URL []: ").strip()
+mod_issues_url = input("Mod Issues URL [https://github.com/CursedFlames/MCTweaks/issues]: ").strip() or "https://github.com/CursedFlames/MCTweaks/issues"
 
 print("This template includes some sample content for testing/example purposes, including:")
 print("    - Random AW/AT")
@@ -206,14 +203,12 @@ print(
     f'Mod Class:        {mod_class}\n'
     f'Mod Group:        {mod_group}\n'
     f'Mod Author:       {mod_author}\n'
-    f'Mod Contributors: {mod_contributors}\n'
     f'Mod Version:      {mod_version}\n'
     f'Mod License:      {mod_license}\n'
     f'Mod Description:  {mod_description}\n'
     f'Mod Sources URL:  {mod_sources_url}\n'
     f'Mod Homepage URL: {mod_homepage_url}\n'
     f'Mod Issues URL:   {mod_issues_url}\n'
-    f'Mod Discord URL:  {mod_discord_url}\n'
     f'Remove Samples:   {remove_samples}'
 )
 confirm_settings = require_input("Proceed with these settings? (Y/n) [Y]: ", 'Y', confirm_validator).lower() == 'y'
@@ -257,13 +252,11 @@ with chdir(subproject_name):
 
     MassReplace.replace_in_file('gradle.properties', '0.1.0', mod_version)
     MassReplace.replace_in_file('gradle.properties', 'AuthorName', mod_author)
-    MassReplace.replace_in_file('gradle.properties', 'ContributorName, AnotherContributorName', mod_contributors)
     MassReplace.replace_in_file('gradle.properties', 'ARR', mod_license)
     MassReplace.replace_in_file('gradle.properties', 'Example Description', mod_description)
     MassReplace.replace_in_file('gradle.properties', 'https://example.com/sources_url', mod_sources_url)
     MassReplace.replace_in_file('gradle.properties', 'https://example.com/homepage_url', mod_homepage_url)
     MassReplace.replace_in_file('gradle.properties', 'https://example.com/issues_url', mod_issues_url)
-    MassReplace.replace_in_file('gradle.properties', 'https://example.com/discord_url', mod_discord_url)
 
     print('Renaming directories/packages')
     move_package_group('src/main/java/', 'dev.spagurder', mod_group)

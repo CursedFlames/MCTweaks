@@ -1,7 +1,7 @@
 package dev.spagurder.modtemplate.neoforge;
 
 //? neoforge {
-/*import dev.spagurder.modtemplate.Platform;
+import dev.spagurder.modtemplate.Platform;
 import net.neoforged.fml.ModList;
 
 public class NeoforgePlatformImpl implements Platform {
@@ -17,4 +17,4 @@ public class NeoforgePlatformImpl implements Platform {
     }
 
 }
-*///?}
+//?}
