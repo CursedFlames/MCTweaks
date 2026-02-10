@@ -193,7 +193,8 @@ if (modrinthId != "" || curseforgeId != "") {
         file = tasks.remapJar.map { it.archiveFile.get() }
         additionalFiles.from(tasks.remapSourcesJar.map { it.archiveFile.get() })
 
-        type = BETA
+        // TODO don't unconditionally pick this maybe? idk
+        type = STABLE
         displayName = "${property("mod.name")} ${property("mod.version")} for ${stonecutter.current.version} Fabric"
         version = "${property("mod.version")}+${property("deps.minecraft")}-fabric"
         changelog = provider { project.parent!!.file("CHANGELOG.md").readText() }

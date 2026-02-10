@@ -6,5 +6,5 @@ On 1.21.1 and earlier, eating more rotten flesh at once will inflict higher leve
 
 Biomes that don't experience rain (for example, deserts) will inflict double sunlight damage.
 
-This is a port of the Pale effect from (Iridescent)[https://github.com/elytra/Iridescent], a 1.12 mod.
+This is a port of the Pale effect from [Iridescent](https://github.com/elytra/Iridescent), a 1.12 mod.
 Thanks to Kat (5B) for the status effect icon.

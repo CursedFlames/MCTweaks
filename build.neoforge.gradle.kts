@@ -189,7 +189,8 @@ if (modrinthId != "" || curseforgeId != "") {
         file = tasks.jar.map { it.archiveFile.get() }
         additionalFiles.from(tasks.named<org.gradle.jvm.tasks.Jar>("sourcesJar").map { it.archiveFile.get() })
 
-        type = BETA
+        // TODO don't unconditionally pick this maybe? idk
+        type = STABLE
         displayName = "${property("mod.name")} ${property("mod.version")} for ${stonecutter.current.version} Neoforge"
         version = "${property("mod.version")}+${property("deps.minecraft")}-neoforge"
         changelog = provider { project.parent!!.file("CHANGELOG.md").readText() }

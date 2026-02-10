@@ -3,7 +3,7 @@ import dev.kikugie.stonecutter.data.tree.ProjectNode
 plugins {
     id("dev.kikugie.stonecutter")
     id("co.uzzu.dotenv.gradle") version "4.0.0"
-    id("fabric-loom") version "1.11-SNAPSHOT" apply false
+    id("fabric-loom") version "1.15-SNAPSHOT" apply false
     id("net.neoforged.moddev") version "2.0.115" apply false
     id("me.modmuss50.mod-publish-plugin") version "0.8.+" apply false
     // ksp needed for fletching table
@@ -38,7 +38,18 @@ stonecutter tasks {
     order("publishCurseforge", filter = fun(node: ProjectNode) = node.project.tasks.findByName("publishCurseforge") != null)
 }
 
-for (version in stonecutter.versions.map { it.version }.distinct()) tasks.register("publish$version") {
-    group = "publishing"
-    dependsOn(stonecutter.tasks.named("publishMods") { metadata.version == version })
-}
+gradle.taskGraph.whenReady(closureOf<TaskExecutionGraph>(fun(graph: TaskExecutionGraph) {
+    var curseforgeCount = 0;
+    var modrinthCount = 0;
+    graph.getAllTasks().forEach { task ->
+        if (task.name.contains("modrinth", ignoreCase = true)) {
+            modrinthCount++
+        }
+        if (task.name.contains("curseforge", ignoreCase = true)) {
+            curseforgeCount++
+        }
+    }
+    if (curseforgeCount > 1 || modrinthCount > 1) {
+        throw GradleException("Attempting to publish multiple versions or mods at once; cancelling to prevent accidental duplicate uploads")
+    }
+}))

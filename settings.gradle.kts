@@ -33,16 +33,16 @@ stonecutter {
             }
         }
 
-        allVersions(combinations(listOf("1.21.3", "1.21.10"), listOf("fabric", "neoforge")))
+        allVersions(combinations(listOf("1.21.3", "1.21.4", "1.21.5", "1.21.6", "1.21.7", "1.21.8", "1.21.9", "1.21.10", "1.21.11"), listOf("fabric", "neoforge")))
 //        mod("ModTemplate", combinations(listOf("1.21.3", "1.21.10"), listOf("fabric", "neoforge")))
-        mod("FastToolSwitching", combinations(listOf("1.21.3"), listOf("fabric", "neoforge")))
-        mod("HopperBucket", combinations(listOf("1.21.3"), listOf("fabric", "neoforge")))
-        mod("NoDurability", combinations(listOf("1.21.3"), listOf("fabric", "neoforge")))
-        mod("NoIncreasingRepairCost", combinations(listOf("1.21.3"), listOf("fabric", "neoforge")))
-        mod("Pale", combinations(listOf("1.21.3"), listOf("fabric", "neoforge")))
+        mod("FastToolSwitching", combinations(listOf("1.21.3", "1.21.4"), listOf("fabric", "neoforge")))
+        mod("HopperBucket", combinations(listOf("1.21.3", "1.21.4"), listOf("fabric", "neoforge")))
+        mod("NoDurability", combinations(listOf("1.21.3", "1.21.4"), listOf("fabric", "neoforge")))
+        mod("NoIncreasingRepairCost", combinations(listOf("1.21.3", "1.21.4"), listOf("fabric", "neoforge")))
+        mod("Pale", combinations(listOf("1.21.3", "1.21.4"), listOf("fabric", "neoforge")))
         mod("SplitShulkerBoxes", combinations(listOf("1.21.3"), listOf("fabric", "neoforge")))
-        mod("StackablePotions", combinations(listOf("1.21.3"), listOf("fabric", "neoforge")))
-        mod("UpdatingWorldIcon", combinations(listOf("1.21.3"), listOf("fabric", "neoforge")))
+        mod("StackablePotions", combinations(listOf("1.21.3", "1.21.4"), listOf("fabric", "neoforge")))
+        mod("UpdatingWorldIcon", combinations(listOf("1.21.3", "1.21.4"), listOf("fabric", "neoforge")))
         vcsVersion = "1.21.3-fabric"
     }
 }
