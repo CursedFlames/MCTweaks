@@ -24,16 +24,29 @@ stonecutter {
     create(rootProject) {
         // Should be called with all versions used by any mod
         fun allVersions(versions: Iterable<String>) {
-            versions.forEach { version(it, it.substringBeforeLast("-")).buildscript = "build.rootproject.${it.substringAfterLast("-")}.gradle.kts" }
+            versions.forEach {
+                if (it.substringAfterLast("-") == "fabric" && sc.eval(it.substringBeforeLast("-"), ">=26")) {
+                    version(it, it.substringBeforeLast("-")).buildscript = "build.rootproject.${it.substringAfterLast("-")}.post26.gradle.kts"
+                } else {
+                    version(it, it.substringBeforeLast("-")).buildscript = "build.rootproject.${it.substringAfterLast("-")}.gradle.kts"
+                }
+            }
         }
 
         fun mod(subprojectName: String, versions: Iterable<String>) {
             branch(subprojectName) {
-                versions.forEach { version(it, it.substringBeforeLast("-")).buildscript = "../build.${it.substringAfterLast("-")}.gradle.kts" }
+                versions.forEach {
+                    if (it.substringAfterLast("-") == "fabric" && sc.eval(it.substringBeforeLast("-"), ">=26")) {
+                        version(it, it.substringBeforeLast("-")).buildscript = "../build.${it.substringAfterLast("-")}.post26.gradle.kts"
+                    } else {
+                        version(it, it.substringBeforeLast("-")).buildscript = "../build.${it.substringAfterLast("-")}.gradle.kts"
+                    }
+                }
             }
         }
 
         val all = combinations(listOf("1.21.3", "1.21.4", "1.21.5", "1.21.6", "1.21.7", "1.21.8", "1.21.9", "1.21.10", "1.21.11"), listOf("fabric", "neoforge"))
+            .plus(listOf("26.1-snapshot-6-neoforge", "26.1-snapshot-7-fabric"))
         allVersions(all)
 //        mod("ModTemplate", combinations(listOf("1.21.3", "1.21.10"), listOf("fabric", "neoforge")))
         mod("FastToolSwitching", all)

@@ -170,12 +170,13 @@ tasks {
 java {
     withSourcesJar()
     val javaCompat = if (stonecutter.eval(stonecutter.current.version, ">=26")) {
-        JavaVersion.VERSION_25
+        JavaLanguageVersion.of(25)
     } else {
-        JavaVersion.VERSION_21
+        JavaLanguageVersion.of(21)
     }
-    sourceCompatibility = javaCompat
-    targetCompatibility = javaCompat
+    toolchain {
+        languageVersion = javaCompat
+    }
 }
 
 val additionalVersionsStr = findProperty("publish.additionalVersions") as String?

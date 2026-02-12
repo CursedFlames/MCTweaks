@@ -1,8 +1,10 @@
+@file:Suppress("UnstableApiUsage")
+
 plugins {
-    id("net.neoforged.moddev")
+    id("net.fabricmc.fabric-loom")
     kotlin("jvm")
     id("com.google.devtools.ksp")
-    id("dev.kikugie.fletching-table.neoforge")
+    id("dev.kikugie.fletching-table.fabric")
     id("me.modmuss50.mod-publish-plugin")
 }
 
@@ -19,12 +21,27 @@ fun hasProperty(propertyName: String): Boolean {
     return project.hasProperty(propertyName) || sc.node.sibling("")!!.project.hasProperty(propertyName)
 }
 
+// TODO is this generated early enough on clean build
+val accessWidenerFile = file("build/generated/stonecutter/main/resources/${property("mod.id")}.accesswidener")
+
 tasks.named<ProcessResources>("processResources") {
     fun prop(name: String) = property(name) as String
 
     val contributors = if (hasProperty("mod.contributors")) { prop("mod.contributors") } else { "" }
+    val sourcesUrl = if (hasProperty("mod.sources_url")) { prop("mod.sources_url") } else { "" }
     val homepageUrl = if (hasProperty("mod.homepage_url")) { prop("mod.homepage_url") } else { "" }
     val issuesUrl = if (hasProperty("mod.issues_url")) { prop("mod.issues_url") } else { "" }
+    val discordUrl = if (hasProperty("mod.discord_url")) { prop("mod.discord_url") } else { "" }
+
+    var contact = ""
+    fun addContact(key: String, value: String) {
+        if (value == "") return
+        if (contact != "") contact += ",\n    "
+        contact += "\"$key\": \"$value\""
+    }
+    addContact("sources", sourcesUrl)
+    addContact("issues", issuesUrl)
+    addContact("homepage", homepageUrl)
 
     val props = HashMap<String, String>().apply {
         this["id"] = prop("mod.id")
@@ -34,26 +51,26 @@ tasks.named<ProcessResources>("processResources") {
         this["author"] = prop("mod.author")
         this["license"] = prop("mod.license")
         this["description"] = prop("mod.description")
-        this["minecraft"] = prop("deps.minecraft")
+        this["minecraft"] = prop("deps.minecraft").replace("snapshot-", "alpha.")
         // Optional metadata
         this["contributors"] = if (contributors != "") {
-            "credits = \"$contributors\""
+            "\"contributors\": [\"$contributors\"],"
         } else {
             ""
         }
-        this["homepage_url"] = if (homepageUrl != "") {
-            "displayURL = \"${homepageUrl}\"\n" +
-                    "modUrl = \"${homepageUrl}\""
+        this["contact"] = contact
+        this["discordUrl"] = if (discordUrl != "") {
+            "\"modmenu.discord\": \"$discordUrl\""
         } else {
             ""
         }
-        this["issues_url"] = if (issuesUrl != "") {
-            "issueTrackerURL = \"${issuesUrl}\""
-        } else {
-            ""
-        }
-//        this["sources_url"] = prop("mod.sources_url") // unused on neoforge
-//        this["discord_url"] = prop("mod.discord_url") // unused on neoforge
+        // Optionally add an access_widener if one is present
+        this["access_widener"] =
+            if (accessWidenerFile.exists()) {
+                "\"access_widener\": \"${prop("mod.id")}.accesswidener\","
+            } else {
+                ""
+            }
     }
 
     inputs.properties(props)
@@ -63,8 +80,14 @@ tasks.named<ProcessResources>("processResources") {
     }
 }
 
-version = "${property("mod.version")}+${property("deps.minecraft")}-neoforge"
+version = "${property("mod.version")}+${property("deps.minecraft")}-fabric"
 base.archivesName = property("mod.id") as String
+
+tasks.validateAccessWidener.get().dependsOn(tasks.stonecutterGenerate)
+
+loom {
+    if (accessWidenerFile.exists()) accessWidenerPath = accessWidenerFile
+}
 
 // fletchingTable needs to be in beforeEvaluate for some reason, otherwise gradle complains that build/generated/ksp doesn't exist
 beforeEvaluate { fletchingTable {} }
@@ -79,12 +102,6 @@ fletchingTable {
                 env("SERVER", "$modGroup.$modId.mixin.server")
                 env("CLIENT", "$modGroup.$modId.mixin.client")
             }
-        }
-    }
-
-    if (project.parent!!.file("src/main/resources/$modId.accesswidener").exists()) {
-        accessConverter.register(project.sourceSets.main) {
-            add("$modId.accesswidener", "META-INF/accesstransformer.cfg")
         }
     }
 
@@ -103,6 +120,7 @@ fletchingTable {
 }
 
 repositories {
+    mavenLocal()
     maven("https://maven.parchmentmc.org") { name = "ParchmentMC" }
 
     fun strictMaven(url: String, alias: String, vararg groups: String) = exclusiveContent {
@@ -113,46 +131,28 @@ repositories {
     strictMaven("https://api.modrinth.com/maven", "Modrinth", "maven.modrinth")
 }
 
-neoForge {
-    version = property("deps.neoforge") as String
-    validateAccessTransformers = true
+dependencies {
+    minecraft("com.mojang:minecraft:${property("deps.minecraft")}")
+    implementation("net.fabricmc:fabric-loader:${property("deps.fabric-loader")}")
+    implementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric-api")}")
 
-    file("build/resources/main/META-INF/accesstransformer.cfg").let {
-        if (it.exists()) accessTransformers.from(it)
-    }
+    val modules = listOf("transitive-access-wideners-v1", "registry-sync-v0", "resource-loader-v0")
+    for (it in modules) implementation(fabricApi.module("fabric-$it", property("deps.fabric-api") as String))
 
-    if (hasProperty("deps.parchment")) parchment {
-        val (mc, ver) = (property("deps.parchment") as String).split(':')
-        mappingsVersion = ver
-        minecraftVersion = mc
-    }
+    // TODO
+//    modLocalRuntime(fletchingTable.modrinth("modmenu", property("deps.minecraft") as String))
+}
 
-    runs {
-        register("client") {
-            gameDirectory = file("run/")
-            client()
-        }
-        register("server") {
-            gameDirectory = file("run/")
-            server()
-        }
+fabricApi {
+    configureDataGeneration() {
+        outputDirectory = file("${project.parent!!.projectDir}/src/main/generated")
+        client = true
     }
-
-    mods {
-        register(property("mod.id") as String) {
-            sourceSet(sourceSets["main"])
-        }
-    }
-    sourceSets["main"].resources.srcDir("src/main/generated")
 }
 
 tasks {
     processResources {
-        exclude("**/fabric.mod.json", "**/mods.toml")
-    }
-
-    named("createMinecraftArtifacts") {
-        dependsOn("stonecutterGenerate")
+        exclude("**/neoforge.mods.toml", "**/mods.toml")
     }
 
     register<Copy>("buildAndCollect") {
@@ -183,19 +183,20 @@ val additionalVersions: List<String> = additionalVersionsStr
     ?: emptyList()
 
 val modrinthId = if (hasProperty("publish.modrinth")) property("publish.modrinth") as String else ""
-val curseforgeId = if (hasProperty("publish.curseforge")) property("publish.curseforge") as String else if (hasProperty("publish.curseforge.neoforge")) property("publish.curseforge.neoforge") as String else ""
+val curseforgeId = if (hasProperty("publish.curseforge")) property("publish.curseforge") as String else if (hasProperty("publish.curseforge.fabric")) property("publish.curseforge.fabric") as String else ""
 
 if (modrinthId != "" || curseforgeId != "") {
     publishMods {
         file = tasks.jar.map { it.archiveFile.get() }
-        additionalFiles.from(tasks.named<org.gradle.jvm.tasks.Jar>("sourcesJar").map { it.archiveFile.get() })
+        // TODO fabric sources jar?
+//        additionalFiles.from(tasks.sourcesJar.map { it.archiveFile.get() })
 
         // TODO don't unconditionally pick this maybe? idk
         type = STABLE
-        displayName = "${property("mod.name")} ${property("mod.version")} for ${stonecutter.current.version} Neoforge"
-        version = "${property("mod.version")}+${property("deps.minecraft")}-neoforge"
+        displayName = "${property("mod.name")} ${property("mod.version")} for ${stonecutter.current.version} Fabric"
+        version = "${property("mod.version")}+${property("deps.minecraft")}-fabric"
         changelog = provider { project.parent!!.file("CHANGELOG.md").readText() }
-        modLoaders.add("neoforge")
+        modLoaders.add("fabric")
 
         if (modrinthId != "") {
             modrinth {
@@ -204,6 +205,7 @@ if (modrinthId != "" || curseforgeId != "") {
                 accessToken = env.MODRINTH_API_KEY.orNull()
                 minecraftVersions.add(stonecutter.current.version)
                 minecraftVersions.addAll(additionalVersions)
+                requires("fabric-api")
             }
         }
 
@@ -213,6 +215,7 @@ if (modrinthId != "" || curseforgeId != "") {
                 accessToken = env.CURSEFORGE_API_KEY.orNull()
                 minecraftVersions.add(stonecutter.current.version)
                 minecraftVersions.addAll(additionalVersions)
+                requires("fabric-api")
             }
         }
 
