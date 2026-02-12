@@ -33,7 +33,11 @@ class MixinGameRenderer {
 	private void takeAutoScreenshot(Path path) {}
 
 	// This isn't entirely reliable, but we can't target inside the lambda after the new screenshot is saved since `this` isn't captured
+	//? < 1.21.5 {
 	@Inject(method = "takeAutoScreenshot", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Screenshot;takeScreenshot(Lcom/mojang/blaze3d/pipeline/RenderTarget;)Lcom/mojang/blaze3d/platform/NativeImage;"))
+	//?} else {
+	/*@Inject(method = "takeAutoScreenshot", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Screenshot;takeScreenshot(Lcom/mojang/blaze3d/pipeline/RenderTarget;Ljava/util/function/Consumer;)V"))
+	*///?}
 	private void on_takeAutoScreenshot(Path $$0, CallbackInfo ci) {
 		this.updatingWorldIcon_hasWorldScreenshot = true;
 	}

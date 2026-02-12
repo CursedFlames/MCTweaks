@@ -24,25 +24,26 @@ stonecutter {
     create(rootProject) {
         // Should be called with all versions used by any mod
         fun allVersions(versions: Iterable<String>) {
-            versions.forEach { version(it, it.substringBefore("-")).buildscript = "build.rootproject.${it.substringAfter("-")}.gradle.kts" }
+            versions.forEach { version(it, it.substringBeforeLast("-")).buildscript = "build.rootproject.${it.substringAfterLast("-")}.gradle.kts" }
         }
 
         fun mod(subprojectName: String, versions: Iterable<String>) {
             branch(subprojectName) {
-                versions.forEach { version(it, it.substringBefore("-")).buildscript = "../build.${it.substringAfter("-")}.gradle.kts" }
+                versions.forEach { version(it, it.substringBeforeLast("-")).buildscript = "../build.${it.substringAfterLast("-")}.gradle.kts" }
             }
         }
 
-        allVersions(combinations(listOf("1.21.3", "1.21.4", "1.21.5", "1.21.6", "1.21.7", "1.21.8", "1.21.9", "1.21.10", "1.21.11"), listOf("fabric", "neoforge")))
+        val all = combinations(listOf("1.21.3", "1.21.4", "1.21.5", "1.21.6", "1.21.7", "1.21.8", "1.21.9", "1.21.10", "1.21.11"), listOf("fabric", "neoforge"))
+        allVersions(all)
 //        mod("ModTemplate", combinations(listOf("1.21.3", "1.21.10"), listOf("fabric", "neoforge")))
-        mod("FastToolSwitching", combinations(listOf("1.21.3", "1.21.4"), listOf("fabric", "neoforge")))
-        mod("HopperBucket", combinations(listOf("1.21.3", "1.21.4"), listOf("fabric", "neoforge")))
-        mod("NoDurability", combinations(listOf("1.21.3", "1.21.4"), listOf("fabric", "neoforge")))
-        mod("NoIncreasingRepairCost", combinations(listOf("1.21.3", "1.21.4"), listOf("fabric", "neoforge")))
-        mod("Pale", combinations(listOf("1.21.3", "1.21.4"), listOf("fabric", "neoforge")))
+        mod("FastToolSwitching", all)
+        mod("HopperBucket", all)
+        mod("NoDurability", all)
+        mod("NoIncreasingRepairCost", all)
+        mod("Pale", all)
         mod("SplitShulkerBoxes", combinations(listOf("1.21.3"), listOf("fabric", "neoforge")))
-        mod("StackablePotions", combinations(listOf("1.21.3", "1.21.4"), listOf("fabric", "neoforge")))
-        mod("UpdatingWorldIcon", combinations(listOf("1.21.3", "1.21.4"), listOf("fabric", "neoforge")))
+        mod("StackablePotions", all)
+        mod("UpdatingWorldIcon", all)
         vcsVersion = "1.21.3-fabric"
     }
 }

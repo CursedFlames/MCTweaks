@@ -1,3 +1,4 @@
+import dev.kikugie.commons.text.countMatching
 import dev.kikugie.stonecutter.data.tree.ProjectNode
 
 plugins {
@@ -30,6 +31,9 @@ stonecutter parameters {
         string(current.parsed <= "1.21.6") {
             replace("usingWhitelist", "enforceWhitelist")
         }
+        string(current.parsed >= "1.21.11") {
+            replace("ResourceLocation", "Identifier")
+        }
     }
 }
 
@@ -39,17 +43,26 @@ stonecutter tasks {
 }
 
 gradle.taskGraph.whenReady(closureOf<TaskExecutionGraph>(fun(graph: TaskExecutionGraph) {
-    var curseforgeCount = 0;
-    var modrinthCount = 0;
-    graph.getAllTasks().forEach { task ->
-        if (task.name.contains("modrinth", ignoreCase = true)) {
-            modrinthCount++
+    val mcVersions = env.PUBLISH_MC_VERSIONS.orElse("").split(',').map { it.trim() }
+    val loaders = env.PUBLISH_LOADERS.orElse("").split(',').map { it.trim() }
+    val mods = env.PUBLISH_MODS.orElse("").split(',').map { it.trim() }
+
+    graph.allTasks.forEach { task ->
+        if (task.name.contains("publish", ignoreCase = true) && task.project.path.count { c -> c == ':' } >= 2) {
+            val mod = task.project.path.substringBeforeLast(':').substring(1)
+            val mcVersion = task.project.path.substringAfterLast(':').substringBeforeLast('-')
+            val loader = task.project.path.substringAfterLast(':').substringAfterLast('-')
+            if (!(mcVersions.contains(mcVersion) && loaders.contains(loader) && mods.contains(mod))) {
+                task.enabled = false;
+            } else {
+                // Using .error entirely so it's more visible in the logs. Probably bad practice but whatever, it's my buildscript.
+                if (task.name.contains("modrinth", ignoreCase = true)) {
+                    project.logger.error("Publishing: $mod $mcVersion $loader on Modrinth")
+                }
+                if (task.name.contains("curseforge", ignoreCase = true)) {
+                    project.logger.error("Publishing: $mod $mcVersion $loader on Curseforge")
+                }
+            }
         }
-        if (task.name.contains("curseforge", ignoreCase = true)) {
-            curseforgeCount++
-        }
-    }
-    if (curseforgeCount > 1 || modrinthCount > 1) {
-        throw GradleException("Attempting to publish multiple versions or mods at once; cancelling to prevent accidental duplicate uploads")
     }
 }))

@@ -41,7 +41,11 @@ public class MixinHopperBlockEntity {
 		if (blockState.getBlock() instanceof BucketPickup bucketPickup) {
 			var pickup = bucketPickup.pickupBlock(null, level, pos, blockState);
 			if (pickup.isEmpty()) return;
+			//? neoforge {
+			/*bucketPickup.getPickupSound(blockState).ifPresent(soundEvent -> level.playSound(null, pos, soundEvent, SoundSource.BLOCKS));
+			*///?} else {
 			bucketPickup.getPickupSound().ifPresent(soundEvent -> level.playSound(null, pos, soundEvent, SoundSource.BLOCKS));
+			//?}
 			level.gameEvent(null, GameEvent.FLUID_PICKUP, pos);
 			bucketStack.shrink(1);
 			if (bucketStack.isEmpty()) {
@@ -61,7 +65,11 @@ public class MixinHopperBlockEntity {
 		if (bucketStack.getItem() instanceof DispensibleContainerItem dispensible) {
 			Direction direction = blockState.getValue(HopperBlock.FACING);
 			var outputPos = pos.relative(direction);
+			//? neoforge {
+			/*if (dispensible.emptyContents(null, level, outputPos, null, bucketStack)) {
+			*///?} else {
 			if (dispensible.emptyContents(null, level, outputPos, null)) {
+			 //?}
 				dispensible.checkExtraContent(null, level, bucketStack, outputPos);
 				hopper.setItem(bucketStackIndex, new ItemStack(Items.BUCKET));
 				cir.setReturnValue(true);

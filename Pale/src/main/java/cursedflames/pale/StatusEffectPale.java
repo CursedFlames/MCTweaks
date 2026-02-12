@@ -16,12 +16,16 @@ public class StatusEffectPale extends MobEffect {
 
 	@Override
 	public boolean applyEffectTick(ServerLevel level, LivingEntity entity, int amplifier) {
+		//? <1.21.5 {
 		if (level.isDay() && !entity.fireImmune() && !entity.isInWaterRainOrBubble() && !entity.isInPowderSnow) {
+		//?} else {
+		/*if (level.isBrightOutside() && !entity.fireImmune() && !entity.isInWaterOrRain() && !entity.isInPowderSnow && !entity.wasInPowderSnow) {
+		*///?}
 			BlockPos pos = BlockPos.containing(entity.getX(), entity.getEyeY(), entity.getZ());
 			if (level.canSeeSky(pos)) {
 				var biome = level.getBiome(pos);
 				float damage = (biome.isBound() && !biome.value().hasPrecipitation()) ? 2 : 1;
-				entity.hurt(entity.damageSources().onFire(), damage);
+				entity.hurtServer(level, entity.damageSources().onFire(), damage);
 			}
 		}
 		return true;
