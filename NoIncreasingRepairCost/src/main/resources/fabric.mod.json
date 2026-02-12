@@ -23,6 +23,7 @@
   "entrypoints": {},
   "mixins": [],
   "depends": {
-    "fabric-api": "*"
+    "fabric-api": "*",
+    "minecraft": "${minecraft}"
   }
 }
