@@ -1,7 +1,7 @@
 package dev.spagurder.modtemplate.neoforge;
 
 //? neoforge {
-import dev.spagurder.modtemplate.ExampleEventHandler; // sample_content
+/*import dev.spagurder.modtemplate.ExampleEventHandler; // sample_content
 import dev.spagurder.modtemplate.ModTemplate;
 import net.minecraft.server.level.ServerPlayer; // sample_content
 import net.neoforged.api.distmarker.Dist;
@@ -35,4 +35,4 @@ public class NeoforgeEntrypoint {
     }
 
 }
-//?}
+*///?}

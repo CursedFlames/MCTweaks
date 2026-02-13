@@ -22,7 +22,7 @@ fun hasProperty(propertyName: String): Boolean {
 }
 
 // TODO is this generated early enough on clean build
-val accessWidenerFile = file("build/generated/stonecutter/main/resources/${property("mod.id")}.accesswidener")
+val accessWidenerFile = file("build/generated/stonecutter/main/resources/${property("mod.id")}.named.accesswidener")
 
 tasks.named<ProcessResources>("processResources") {
     fun prop(name: String) = property(name) as String
@@ -77,6 +77,10 @@ tasks.named<ProcessResources>("processResources") {
 
     filesMatching(listOf("fabric.mod.json", "META-INF/neoforge.mods.toml", "META-INF/mods.toml", "${prop("mod.id")}.mixins.json")) {
         expand(props)
+    }
+    
+    into("${property("mod.id")}.accesswidener") {
+        from("${property("mod.id")}.named.accesswidener")
     }
 }
 
@@ -156,7 +160,7 @@ fabricApi {
 
 tasks {
     processResources {
-        exclude("**/neoforge.mods.toml", "**/mods.toml")
+        exclude("**/neoforge.mods.toml", "**/mods.toml", "**/accesstransformer.cfg", "**/*.official.accesswidener")
     }
 
     register<Copy>("buildAndCollect") {

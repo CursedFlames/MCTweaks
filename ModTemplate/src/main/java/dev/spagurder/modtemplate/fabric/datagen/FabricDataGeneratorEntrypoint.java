@@ -1,7 +1,7 @@
 package dev.spagurder.modtemplate.fabric.datagen;
 
 //? fabric {
-/*import dev.kikugie.fletching_table.annotation.fabric.Entrypoint;
+import dev.kikugie.fletching_table.annotation.fabric.Entrypoint;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
@@ -16,4 +16,4 @@ public class FabricDataGeneratorEntrypoint implements DataGeneratorEntrypoint {
     }
 
 }
-*///?}
+//?}

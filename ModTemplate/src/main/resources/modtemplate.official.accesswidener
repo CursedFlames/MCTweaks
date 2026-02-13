@@ -1,0 +1,3 @@
+classTweaker v1 official
+
+accessible field net/minecraft/server/MinecraftServer enforceWhitelist Z # sample_content

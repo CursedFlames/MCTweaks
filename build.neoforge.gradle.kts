@@ -82,11 +82,17 @@ fletchingTable {
         }
     }
 
-    if (project.parent!!.file("src/main/resources/$modId.accesswidener").exists()) {
-        accessConverter.register(project.sourceSets.main) {
-            add("$modId.accesswidener", "META-INF/accesstransformer.cfg")
-        }
-    }
+    // TODO re-enable AW conversion
+//    val awName = if (stonecutter.eval(stonecutter.current.version, ">=26")) {
+//        "$modId.official.accesswidener"
+//    } else {
+//        "$modId.named.accesswidener"
+//    }
+//    if (project.parent!!.file("src/main/resources/$awName").exists()) {
+//        accessConverter.register(project.sourceSets.main) {
+//            add(awName, "META-INF/accesstransformer.cfg")
+//        }
+//    }
 
     lang.create("main") {
         patterns.add("assets/$modId/lang/**")
@@ -148,7 +154,7 @@ neoForge {
 
 tasks {
     processResources {
-        exclude("**/fabric.mod.json", "**/mods.toml")
+        exclude("**/fabric.mod.json", "**/mods.toml", "**/*.accesswidener")
     }
 
     named("createMinecraftArtifacts") {
