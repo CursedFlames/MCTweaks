@@ -170,11 +170,13 @@ mod_name = require_input("Mod Name: ")
 mod_id = ''.join(mod_name.lower().split())
 mod_id = require_input(f"Mod ID [{mod_id}]: ", mod_id, mod_id_validator)
 
+mod_class = ''.join(mod_name.split())
+
 print("This is the name of the mod's directory, and the name of the gradle subproject for this mod.")
-subproject_name = require_input(f"Subproject name [{mod_id}]: ", mod_id, subproject_name_validator)
+subproject_name = require_input(f"Subproject name [{mod_class}]: ", mod_class, subproject_name_validator)
 
 print("This should be a valid Java class name. I do not validate this.")
-mod_class = input("Mod Class [ModTemplate]: ").strip() or 'ModTemplate'
+mod_class = input(f"Mod Class [{mod_class}]: ").strip() or mod_class
 
 print("The mod group may also be updated. If you are not CursedFlames, please change this.")
 print("Note: Be careful not to include reserved keywords- I do not check for them!")
@@ -231,7 +233,9 @@ with chdir(subproject_name):
         os.remove('src/main/java/dev/spagurder/modtemplate/ExampleEventHandler.java')
         yeet_line('src/main/java/dev/spagurder/modtemplate/fabric/FabricEntrypoint.java', 'sample_content')
         yeet_line('src/main/java/dev/spagurder/modtemplate/neoforge/NeoforgeEntrypoint.java', 'sample_content')
-        yeet_line('src/main/resources/modtemplate.accesswidener', 'sample_content')
+        yeet_line('src/main/resources/modtemplate.named.accesswidener', 'sample_content')
+        yeet_line('src/main/resources/modtemplate.official.accesswidener', 'sample_content')
+        yeet_line('src/main/resources/META-INF/accesstransformer.cfg', 'sample_content')
 
     if mod_class != 'ModTemplate':
         print('Renaming Mod Class File...')
@@ -239,8 +243,10 @@ with chdir(subproject_name):
                   f'src/main/java/dev/spagurder/modtemplate/{mod_class}.java')
 
     print('Renaming Resource Files...')
-    os.rename('src/main/resources/modtemplate.accesswidener',
-              f'src/main/resources/{mod_id}.accesswidener')
+    os.rename('src/main/resources/modtemplate.named.accesswidener',
+              f'src/main/resources/{mod_id}.named.accesswidener')
+    os.rename('src/main/resources/modtemplate.official.accesswidener',
+              f'src/main/resources/{mod_id}.official.accesswidener')
     os.rename('src/main/resources/modtemplate.mixins.json',
               f'src/main/resources/{mod_id}.mixins.json')
 
