@@ -13,7 +13,7 @@ pluginManagement {
 
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.9.0"
-    id("dev.kikugie.stonecutter") version "0.8.3"
+    id("dev.kikugie.stonecutter") version "0.9-alpha.6"
 }
 
 fun combinations(mcVersions: Iterable<String>, loaders: Iterable<String>): List<String> {
