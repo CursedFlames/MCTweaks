@@ -126,6 +126,7 @@ fletchingTable {
 repositories {
     mavenLocal()
     maven("https://maven.parchmentmc.org") { name = "ParchmentMC" }
+    maven("https://maven.fzzyhmstrs.me/") { name = "FzzyMaven" }
 
     fun strictMaven(url: String, alias: String, vararg groups: String) = exclusiveContent {
         forRepository { maven(url) { name = alias } }
@@ -147,6 +148,10 @@ dependencies {
 
     val modules = listOf("transitive-access-wideners-v1", "registry-sync-v0", "resource-loader-v0")
     for (it in modules) modImplementation(fabricApi.module("fabric-$it", property("deps.fabric-api") as String))
+
+    if (hasProperty("deps.fzzy-config.enabled")) {
+        modImplementation("me.fzzyhmstrs:fzzy_config:${property("deps.fzzy-config")}")
+    }
 
     modLocalRuntime(fletchingTable.modrinth("modmenu", property("deps.minecraft") as String))
 }

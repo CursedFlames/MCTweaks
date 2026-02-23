@@ -110,6 +110,8 @@ fletchingTable {
 
 repositories {
     maven("https://maven.parchmentmc.org") { name = "ParchmentMC" }
+    maven("https://maven.fzzyhmstrs.me/") { name = "FzzyMaven" }
+    maven("https://thedarkcolour.github.io/KotlinForForge/")
 
     fun strictMaven(url: String, alias: String, vararg groups: String) = exclusiveContent {
         forRepository { maven(url) { name = alias } }
@@ -117,6 +119,12 @@ repositories {
     }
     strictMaven("https://www.cursemaven.com", "Curseforge", "curse.maven")
     strictMaven("https://api.modrinth.com/maven", "Modrinth", "maven.modrinth")
+}
+
+dependencies {
+    if (hasProperty("deps.fzzy-config.enabled")) {
+        implementation("me.fzzyhmstrs:fzzy_config:${property("deps.fzzy-config")}+neoforge")
+    }
 }
 
 neoForge {

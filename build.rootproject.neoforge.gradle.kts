@@ -13,6 +13,9 @@ beforeEvaluate { fletchingTable {} }
 repositories {
     mavenLocal()
     maven("https://maven.parchmentmc.org") { name = "ParchmentMC" }
+    // seems to be required in rootproject buildscript even though subprojects are the ones that actually have the dependency
+    maven("https://maven.fzzyhmstrs.me/") { name = "FzzyMaven" }
+    maven("https://thedarkcolour.github.io/KotlinForForge/")
 
     fun strictMaven(url: String, alias: String, vararg groups: String) = exclusiveContent {
         forRepository { maven(url) { name = alias } }
@@ -45,6 +48,11 @@ neoForge {
 }
 
 dependencies {
+    // only apply fzzy-config on MC versions where we actually have a fzzy version set
+    if (hasProperty("deps.fzzy-config")) {
+        implementation("me.fzzyhmstrs:fzzy_config:${property("deps.fzzy-config")}+neoforge")
+    }
+
     sc.tree.branches
         .filter(fun(branch: ProjectBranch) = branch.id != "")
         .map(fun(branch: ProjectBranch) = branch[sc.current.project])
