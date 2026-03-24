@@ -54,6 +54,11 @@ tasks.named<ProcessResources>("processResources") {
         }
 //        this["sources_url"] = prop("mod.sources_url") // unused on neoforge
 //        this["discord_url"] = prop("mod.discord_url") // unused on neoforge
+
+        // TODO some better method of dependency management
+        if (hasProperty("deps.fzzy-config")) {
+            this["fzzy_config"] = prop("deps.fzzy-config").split("+")[0]
+        }
     }
 
     inputs.properties(props)
@@ -202,7 +207,8 @@ val curseforgeId = if (hasProperty("publish.curseforge")) property("publish.curs
 if (modrinthId != "" || curseforgeId != "") {
     publishMods {
         file = tasks.jar.map { it.archiveFile.get() }
-        additionalFiles.from(tasks.named<org.gradle.jvm.tasks.Jar>("sourcesJar").map { it.archiveFile.get() })
+        // TODO sources jars currently disabled bc curseforge complains about duplicate files
+//        additionalFiles.from(tasks.named<org.gradle.jvm.tasks.Jar>("sourcesJar").map { it.archiveFile.get() })
 
         // TODO don't unconditionally pick this maybe? idk
         type = STABLE
@@ -218,6 +224,9 @@ if (modrinthId != "" || curseforgeId != "") {
                 accessToken = env.MODRINTH_API_KEY.orNull()
                 minecraftVersions.add(stonecutter.current.version)
                 minecraftVersions.addAll(additionalVersions)
+                if (hasProperty("deps.fzzy-config.enabled")) {
+                    requires("fzzy-config")
+                }
             }
         }
 
@@ -227,6 +236,9 @@ if (modrinthId != "" || curseforgeId != "") {
                 accessToken = env.CURSEFORGE_API_KEY.orNull()
                 minecraftVersions.add(stonecutter.current.version)
                 minecraftVersions.addAll(additionalVersions)
+                if (hasProperty("deps.fzzy-config.enabled")) {
+                    requires("fzzy-config")
+                }
             }
         }
 

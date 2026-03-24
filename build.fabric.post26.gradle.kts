@@ -71,6 +71,10 @@ tasks.named<ProcessResources>("processResources") {
             } else {
                 ""
             }
+        // TODO some better method of dependency management
+        if (hasProperty("deps.fzzy-config")) {
+            this["fzzy_config"] = prop("deps.fzzy-config").split("+")[0]
+        }
     }
 
     inputs.properties(props)
@@ -215,6 +219,9 @@ if (modrinthId != "" || curseforgeId != "") {
                 minecraftVersions.add(stonecutter.current.version)
                 minecraftVersions.addAll(additionalVersions)
                 requires("fabric-api")
+                if (hasProperty("deps.fzzy-config.enabled")) {
+                    requires("fzzy-config")
+                }
             }
         }
 
@@ -225,6 +232,9 @@ if (modrinthId != "" || curseforgeId != "") {
                 minecraftVersions.add(stonecutter.current.version)
                 minecraftVersions.addAll(additionalVersions)
                 requires("fabric-api")
+                if (hasProperty("deps.fzzy-config.enabled")) {
+                    requires("fzzy-config")
+                }
             }
         }
 

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "${id}",
+  "name": "${name}",
+  "version": "${version}",
+  "authors": ["${author}"],
+  ${contributors}
+  "contact": {
+	${contact}
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        ${discordUrl}
+      }
+    }
+  },
+  "description": "${description}",
+  "icon": "icon.png",
+  "license": "${license}",
+  ${access_widener}
+  "environment": "*",
+  "entrypoints": {},
+  "mixins": [],
+  "depends": {
+    "fabric-api": "*",
+    "minecraft": "${minecraft}",
+    "fzzy_config": ">=${fzzy_config}"
+  }
+}

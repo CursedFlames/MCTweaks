@@ -71,6 +71,10 @@ tasks.named<ProcessResources>("processResources") {
             } else {
                 ""
             }
+        // TODO some better method of dependency management
+        if (hasProperty("deps.fzzy-config")) {
+            this["fzzy_config"] = prop("deps.fzzy-config").split("+")[0]
+        }
     }
 
     inputs.properties(props)
@@ -201,7 +205,8 @@ val curseforgeId = if (hasProperty("publish.curseforge")) property("publish.curs
 if (modrinthId != "" || curseforgeId != "") {
     publishMods {
         file = tasks.remapJar.map { it.archiveFile.get() }
-        additionalFiles.from(tasks.remapSourcesJar.map { it.archiveFile.get() })
+        // TODO sources jars currently disabled bc curseforge complains about duplicate files
+//        additionalFiles.from(tasks.remapSourcesJar.map { it.archiveFile.get() })
 
         // TODO don't unconditionally pick this maybe? idk
         type = STABLE
@@ -218,6 +223,9 @@ if (modrinthId != "" || curseforgeId != "") {
                 minecraftVersions.add(stonecutter.current.version)
                 minecraftVersions.addAll(additionalVersions)
                 requires("fabric-api")
+                if (hasProperty("deps.fzzy-config.enabled")) {
+                    requires("fzzy-config")
+                }
             }
         }
 
@@ -228,6 +236,9 @@ if (modrinthId != "" || curseforgeId != "") {
                 minecraftVersions.add(stonecutter.current.version)
                 minecraftVersions.addAll(additionalVersions)
                 requires("fabric-api")
+                if (hasProperty("deps.fzzy-config.enabled")) {
+                    requires("fzzy-config")
+                }
             }
         }
 

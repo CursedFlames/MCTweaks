@@ -1,0 +1,13 @@
+{
+	"nametaggableplayers": {
+		"config": {
+			"nametagsUsedOn": "Nametags usable on",
+			"resetNamesOnDeath": "Reset custom names on death"
+		},
+		"nametags_used_on": {
+			"SELF": "Yourself",
+			"OTHERS": "Other players",
+			"BOTH": "Yourself and other players",
+		}
+	}
+}
