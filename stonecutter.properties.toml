@@ -90,10 +90,12 @@
 "deps.neoforge"="21.11.38-beta"
 "deps.fzzy-config"="0.7.6+1.21.11"
 
-["26.1-snapshot-6-neoforge"]
-"deps.minecraft"="26.1-snapshot-6"
-"deps.neoforge"="26.1.0.0-alpha.10+snapshot-6"
+["26.1-neoforge"]
+"deps.minecraft"="26.1"
+"deps.neoforge"="26.1.0.1-beta"
+#"deps.fzzy-config"="0.7.6+26.1"
 
-["26.1-snapshot-7-fabric"]
-"deps.minecraft"="26.1-snapshot-7"
-"deps.fabric-api"="0.143.4+26.1"
+["26.1-fabric"]
+"deps.minecraft"="26.1"
+"deps.fabric-api"="0.144.0+26.1"
+#"deps.fzzy-config"="0.7.6+26.1"
