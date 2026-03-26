@@ -129,8 +129,10 @@ fletchingTable {
 
 repositories {
     mavenLocal()
+    mavenCentral()
     maven("https://maven.parchmentmc.org") { name = "ParchmentMC" }
     maven("https://maven.fzzyhmstrs.me/") { name = "FzzyMaven" }
+    maven("https://maven.terraformersmc.com/") { name = "TerraformersMC" }
 
     fun strictMaven(url: String, alias: String, vararg groups: String) = exclusiveContent {
         forRepository { maven(url) { name = alias } }
@@ -150,6 +152,8 @@ dependencies {
 
     if (hasProperty("deps.fzzy-config.enabled")) {
         implementation("me.fzzyhmstrs:fzzy_config:${property("deps.fzzy-config")}")
+        // TODO currently need to force transitive dep onto a different version for *some reason*. thanks gradle and maven
+        implementation("me.lucko:fabric-permissions-api:0.7.0")
     }
 
     // TODO

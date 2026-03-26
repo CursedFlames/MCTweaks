@@ -114,8 +114,11 @@ fletchingTable {
 }
 
 repositories {
+    mavenLocal()
+    mavenCentral()
     maven("https://maven.parchmentmc.org") { name = "ParchmentMC" }
     maven("https://maven.fzzyhmstrs.me/") { name = "FzzyMaven" }
+    maven("https://maven.terraformersmc.com/") { name = "TerraformersMC" }
     maven("https://thedarkcolour.github.io/KotlinForForge/")
 
     fun strictMaven(url: String, alias: String, vararg groups: String) = exclusiveContent {

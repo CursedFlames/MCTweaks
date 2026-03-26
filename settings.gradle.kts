@@ -52,7 +52,7 @@ stonecutter {
         mod("ModTemplate", all)
         mod("FastToolSwitching", all)
         mod("HopperBucket", all)
-        mod("NametaggablePlayers", pre26)
+        mod("NametaggablePlayers", all)
         mod("NoDurability", all)
         mod("NoIncreasingRepairCost", all)
         mod("Pale", all)
